@@ -14,7 +14,7 @@ meter       = unit.meter
 seconds     = unit.seconds
 kilogram    = unit.kilogram
 kelvin      = unit.kelvin
-celcius     = unit.celsius
+celsius     = unit.celsius
 
 units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
 
