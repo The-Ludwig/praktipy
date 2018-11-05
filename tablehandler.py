@@ -62,18 +62,19 @@ class TableHandler:
             for i in range(len(self.collumns)-1):
                 if(len(line) <= self.collumns[i+1]):
                     newWord = self.__parseWord( line[self.collumns[i]:] )
-                    if newWord != None:
-                        self.table[i].append( newWord )
+                    self.table[i].append( newWord )
                     found_last = True
+                    # Fill table with nones so we get a rectangular shape
+                    for j in range(i+1, len(self.collumns)):
+                        self.table[j].append( None )
                     break
                 newWord = self.__parseWord(line[self.collumns[i]:self.collumns[i+1]])
-                if newWord != None:
-                    self.table[i].append(newWord)
+                
+                self.table[i].append(newWord)
         
             if found_last == False:
                 newWord = self.__parseWord(line[self.collumns[-1]:])
-                if newWord != None:
-                    self.table[-1].append(newWord)
+                self.table[-1].append(newWord)
 
     def getDict(self):
         """Retuns a dictionary mapping the first line to its collumns"""
@@ -88,7 +89,7 @@ class TableHandler:
         for c in self.table:
             dicti[c[0]] = []
             for j in c[1:]:
-                if type(j) != str and type(j) != chr:
+                if type(j) != str and type(j) != chr and j != None:
                     dicti[c[0]].append(j)
 
         return dicti
@@ -116,12 +117,14 @@ class TableHandler:
             for i in range(len(c)):
                 tTable[i].append(c[i])
         
-        # Search length
+        # Search length and replace Nones
         maxLen = 0
-        for i in tTable:
-            for j in i:
-                if maxLen < len(str(j)):
-                    maxLen = len(str(j))
+        for i in range(len(tTable)):
+            for j in range(len(tTable[0])):
+                if(tTable[i][j] == None):
+                    tTable[i][j] = ""
+                if maxLen < len(str(tTable[i][j])):
+                    maxLen = len(str(tTable[i][j]))
 
         # Write TeX
         file = open(filename, "w+")                
