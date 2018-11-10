@@ -193,6 +193,8 @@ class TableHandler:
                         newWord = r"\num{"+newWord+"}"
                 else:
                     newWord = str(w)
+                    if(useSIUnitX):
+                        newWord = "{"+newWord+"}"
 
                 file.write(newWord+(maxLen - len(newWord))*" ")
                 
@@ -209,6 +211,8 @@ class TableHandler:
                     newWord = r"\num{"+newWord+"}"
             else:
                 newWord = str(w)
+                if(useSIUnitX):
+                    newWord = "{"+newWord+"}"
 
             file.write(newWord+(maxLen - len(newWord))*" ")
             file.write(r"  \\"+"\n")        
