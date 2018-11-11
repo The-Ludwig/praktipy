@@ -10,4 +10,4 @@ th = genfromtxt("exampleTable.txt")
 print(th.getMeanValues())
 
 # Generate a tex table
-th.makeTexTable("example.tex", useSIUnitX=True, precision=10)
+th.makeTexTable("example.tex", useSIUnitX=True, precision=10, makeHeader=True, standartRules=True)

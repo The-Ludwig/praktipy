@@ -160,7 +160,7 @@ class TableHandler:
                     data[i].append(w)
         return data
 
-    def makeTexTable(self, filename, useSIUnitX=False, precision=None):
+    def makeTexTable(self, filename, useSIUnitX=False, precision=None, makeHeader=False, standartRules=False):
         """Generates a .tex table into file"""
         
         # Generate transposed table
@@ -168,6 +168,7 @@ class TableHandler:
 
         # Search length and replace Nones
         maxLen = 0
+
         for i in range(len(tTable)):
             for j in range(len(tTable[0])):
                 if(tTable[i][j] == None):
@@ -179,43 +180,82 @@ class TableHandler:
         maxLen += 10 
 
         # Write TeX
-        file = open(filename, "w+")                
-        for line in tTable:
+        file = open(filename, "w+")
 
-            for w in line[:-1]:
-                newWord = ""
-                if type(w)==float or type(w)==int or type(w) == ufloat:
-                    if precision != None:
-                        newWord = ("{:."+str(int(precision))+"g}").format(w)
-                    else:
-                        newWord = str(w)
-                    if useSIUnitX == True:
-                        newWord = r"\num{"+newWord+"}"
+        if(makeHeader):
+            file.write(r"\begin{table}"+"\n")
+            
+            file.write("\t"+r"\caption{TABLE}"+"\n")
+            file.write("\t"+r"\label{tab:NAME}"+"\n")
+            if(useSIUnitX):
+                file.write("\t"+r"\sisetup{table-format=X.")
+                if(precision != None):
+                    file.write(str(int(precision)))
                 else:
-                    newWord = str(w)
-                    if(useSIUnitX):
-                        newWord = "{"+newWord+"}"
-
-                file.write(newWord+(maxLen - len(newWord))*" ")
+                    file.write("X")
+                file.write("}\n")
                 
-                file.write(" & ")
+            file.write("\t"+r"\begin{tabular}{")
+            if(useSIUnitX):
+                for i in self.table[:-1]:
+                    file.write("S ")
+                file.write("S")
+            else:
+                for i in self.table[:-1]:
+                    file.write("c ")
+                file.write("c")
+            file.write("}\n")
 
+            if(standartRules):
+                if(makeHeader):
+                    file.write("\t\t")
+                file.write(r"\toprule"+"\n")
+                
+
+        def parseTexWord(word, end = False):
             newWord = ""
-            w = line[-1]
             if type(w)==float or type(w)==int or type(w) == ufloat:
                 if precision != None:
                     newWord = ("{:."+str(int(precision))+"g}").format(w)
                 else:
                     newWord = str(w)
-                if useSIUnitX == True:
-                    newWord = r"\num{"+newWord+"}"
             else:
                 newWord = str(w)
                 if(useSIUnitX):
                     newWord = "{"+newWord+"}"
+            
+            if(makeHeader):
+                file.write("\t\t")
 
             file.write(newWord+(maxLen - len(newWord))*" ")
-            file.write(r"  \\"+"\n")        
+            
+            if(not end):
+                file.write(" & ")
+
+
+        for l in range(len(tTable)):
+
+            if(standartRules and l == 1):
+                if(makeHeader):
+                    file.write("\t\t")
+                file.write(r"\midrule"+"\n")
+
+            for w in tTable[l][:-1]:
+                parseTexWord(w)
+            parseTexWord(tTable[l][-1])
+
+            file.write(r"  \\"+"\n")    
+
+
+        if(standartRules):
+            if(makeHeader):
+                file.write("\t\t")
+            file.write(r"\bottomrule"+"\n")
+
+        if(makeHeader):
+            file.write("\t"+r"\end{tabular}"+"\n")
+            file.write(r"\end{table}")
+
         file.close()
 
     def getMeanValues(self):
