@@ -165,7 +165,6 @@ class TableHandler:
         
         # Generate transposed table
         tTable = self.getTransposedTable()
-
         # Search length and replace Nones
         maxLen = 0
 
@@ -209,18 +208,17 @@ class TableHandler:
             if(standartRules):
                 if(makeHeader):
                     file.write("\t\t")
-                file.write(r"\toprule"+"\n")
-                
+                file.write(r"\toprule"+"\n")      
 
         def parseTexWord(word, end = False):
             newWord = ""
-            if type(w)==float or type(w)==int or type(w) == ufloat:
+            if type(word)==float or type(word)==int or type(word) == ufloat:
                 if precision != None:
-                    newWord = ("{:."+str(int(precision))+"g}").format(w)
+                    newWord = ("{:."+str(int(precision))+"g}").format(word)
                 else:
-                    newWord = str(w)
+                    newWord = str(word)
             else:
-                newWord = str(w)
+                newWord = str(word)
                 if(useSIUnitX):
                     newWord = "{"+newWord+"}"
             
@@ -232,7 +230,6 @@ class TableHandler:
             if(not end):
                 file.write(" & ")
 
-
         for l in range(len(tTable)):
 
             if(standartRules and l == 1):
@@ -242,10 +239,10 @@ class TableHandler:
 
             for w in tTable[l][:-1]:
                 parseTexWord(w)
-            parseTexWord(tTable[l][-1])
+
+            parseTexWord(tTable[l][-1], end = True)
 
             file.write(r"  \\"+"\n")    
-
 
         if(standartRules):
             if(makeHeader):
