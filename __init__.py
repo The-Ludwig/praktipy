@@ -1,5 +1,5 @@
 # standart imports
-from .praktiplot import plt
+from .praktiplot import plt, matplotlib
 from .tablehandler import TableHandler, genfromtxt
 import numpy as np
 from uncertainties import ufloat
@@ -39,5 +39,5 @@ def polyplotfit(x, params, N = 1000, border=0.05):
 
 units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
 
-__all__ = ["plt", "TableHandler", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt"]
+__all__ = ["plt", "TableHandler", "matplotlib", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt"]
 __all__ += units
