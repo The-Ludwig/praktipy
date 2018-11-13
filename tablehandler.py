@@ -1,6 +1,7 @@
 import numpy as np 
 import uncertainties.unumpy as unp
-from uncertainties import ufloat
+from uncertainties import ufloat, UFloat
+import numbers # to test if something is a number
 
 def __parseWord(word):
     """Parse a word from a tablefile"""
@@ -144,7 +145,7 @@ class TableHandler:
         for c in self.table:
             dicti[c[0]] = []
             for j in c[1:]:
-                if type(j) != str and type(j) != chr and j != None:
+                if isinstance(j, numbers.Number):
                     dicti[c[0]].append(j)
 
         return dicti
@@ -156,7 +157,7 @@ class TableHandler:
             data.append([])
         for i in range(len(self.table)):
             for w in self.table[i]:
-                if type(w) == float or type(w) == int:
+                if isinstance(w, numbers.Number):
                     data[i].append(w)
         return data
 
@@ -212,7 +213,7 @@ class TableHandler:
 
         def parseTexWord(word, end = False):
             newWord = ""
-            if type(word)==float or type(word)==int or type(word) == ufloat:
+            if isinstance(word, numbers.Number) or isinstance(word, UFloat):
                 if precision != None:
                     newWord = ("{:."+str(int(precision))+"g}").format(word)
                 else:
