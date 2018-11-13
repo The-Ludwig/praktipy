@@ -13,5 +13,5 @@ matplotlib.rcParams.update({
     'pgf.preamble': r'\input{'+dirname(abspath(__file__))+r'//matplotlib_header.tex'+r'}',
 })
 # use german locale settings for printing 3.4 as 3,4
-locale.setlocale(locale.LC_ALL, 'de_DE.UTF8')
+locale.setlocale(locale.LC_ALL, 'de_DE.UTF-8')
 plt.ticklabel_format(useLocale=True)
