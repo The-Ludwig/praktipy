@@ -168,13 +168,23 @@ class TableHandler:
         tTable = self.getTransposedTable()
         # Search length and replace Nones
         maxLen = 0
+        
+        maxRowLen = 0
+
+        #find length of row
+        for i in tTable:
+            if(maxRowLen < len(i)):
+                maxRowLen = len(i)
 
         for i in range(len(tTable)):
+            if(len(tTable[i]) < maxRowLen):
+                tTable[i] += (maxRowLen - len(tTable[i])) * [""]
             for j in range(len(tTable[i])):
                 if(tTable[i][j] == None):
                     tTable[i][j] = ""
                 if maxLen < len(str(tTable[i][j])):
                     maxLen = len(str(tTable[i][j]))
+        
 
         # account for SIUnitX stuff
         maxLen += 10 
