@@ -170,7 +170,7 @@ class TableHandler:
         maxLen = 0
 
         for i in range(len(tTable)):
-            for j in range(len(tTable[0])):
+            for j in range(len(tTable[i])):
                 if(tTable[i][j] == None):
                     tTable[i][j] = ""
                 if maxLen < len(str(tTable[i][j])):
