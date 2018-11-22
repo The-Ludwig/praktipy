@@ -2,6 +2,10 @@ prakitpy
 ====
 This provides a little script to handle tables in textfiles (similar, but more powerful, to numpy.genfromtxt()).
 
+# Using Matplotlib
+
+Praktipy will try to set up the matplotlib backend to enable printing of beautiful (german number format and nice math-font) plots. If you want to set up matplotlib yourself, just do that before you import anything from praktipy.
+
 # Documentation
 
 The code currently is not very well documented (Allthough tablehandler.py itself provides nice Docstrings).

@@ -1,5 +1,10 @@
 # standart imports
-from .praktiplot import plt, matplotlib
+import sys 
+if "matplotlib" in sys.modules or "matplotlib.pyplot" in sys.modules:
+    print("Praktipy will not set up the matplotlib backend, because it is allready set up.")
+else:
+    from .praktiplot import plt, matplotlib
+    __all__ += ["plt", "matplotlib"]
 from .tablehandler import TableHandler, genfromtxt
 import numpy as np
 from uncertainties import ufloat
@@ -39,5 +44,5 @@ def polyplotfit(x, params, N = 1000, border=0.05):
 
 units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
 
-__all__ = ["plt", "TableHandler", "matplotlib", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt"]
+__all__ = ["TableHandler", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt"]
 __all__ += units
