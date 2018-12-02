@@ -12,6 +12,7 @@ from uncertainties import ufloat
 import uncertainties.unumpy as unp
 from pint import UnitRegistry
 from scipy import constants as const
+from scipy.optimize import curve_fit
 
 unit = UnitRegistry()
 noms = unp.nominal_values
@@ -45,5 +46,5 @@ def polyplotfit(x, params, N = 1000, border=0.05):
 
 units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
 
-__all__ += ["TableHandler", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt"]
+__all__ += ["TableHandler", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt", "curve_fit"]
 __all__ += units
