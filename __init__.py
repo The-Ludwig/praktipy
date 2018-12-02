@@ -50,7 +50,7 @@ def curveplotfit(f, x, params, N = 1000, border=0.05, logscale = False):
     border: percentage of x_range to make a border"""
     dx = x[-1] - x[0]
     if logscale:
-        x_fit = np.linspace(x[0] - x[0]*border*3, x[-1] + x[-1]*3*border, N)
+        x_fit = np.logspace(np.log10(x[0]) - np.log10(x[0])*border*0.6, np.log10(x[-1])+np.log10(x[-1])*border*0.2, N)
     else:
         x_fit = np.linspace(x[0] - dx*border, x[-1] + dx*border, N)
     y_fit = f(x_fit, *params)
