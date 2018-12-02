@@ -26,8 +26,7 @@ kelvin      = unit.kelvin
 celsius     = unit.celsius
 
 
-# convenience function
-
+# convenience functions
 def polyplotfit(x, params, N = 1000, border=0.05):
     """Plots a polynome which was fitted. 
     x: the original x value which was fitted
@@ -43,8 +42,23 @@ def polyplotfit(x, params, N = 1000, border=0.05):
     
     return (x_fit, y_fit)
 
+def curveplotfit(f, x, params, N = 1000, border=0.05, logscale = False):
+    """Plots a general function which was fitted. 
+    x: the original x value which was fitted
+    params: the parameters in the polynome
+    N: Number of x_values to calculate
+    border: percentage of x_range to make a border"""
+    dx = x[-1] - x[0]
+    if logscale:
+        x_fit = np.linspace(x[0] - x[0]*border*3, x[-1] + x[-1]*3*border, N)
+    else:
+        x_fit = np.linspace(x[0] - dx*border, x[-1] + dx*border, N)
+    y_fit = f(x_fit, *params)
+
+    return (x_fit, y_fit)
+
 
 units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
 
-__all__ += ["TableHandler", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt", "curve_fit"]
+__all__ += ["TableHandler", "np", "ufloat", "unp", "unit", "noms", "stds", "const", "polyplotfit", "genfromtxt", "curveplotfit", "curve_fit"]
 __all__ += units
