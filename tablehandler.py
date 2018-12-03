@@ -161,7 +161,7 @@ class TableHandler:
                     data[i].append(w)
         return data
 
-    def makeTexTable(self, filename, useSIUnitX=False, precision=None, makeHeader=False, standartRules=False):
+    def makeTexTable(self, filename, useSIUnitX=True, precision=None, makeHeader=True, standartRules=True):
         """Generates a .tex table into file"""
         
         # Generate transposed table
