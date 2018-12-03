@@ -225,7 +225,7 @@ class TableHandler:
             newWord = ""
             if isinstance(word, numbers.Number) or isinstance(word, UFloat):
                 if precision != None:
-                    newWord = ("{:."+str(int(precision))+"g}").format(word)
+                    newWord = ("{:."+str(int(precision))+"f}").format(word)
                 else:
                     newWord = str(word)
             else:
