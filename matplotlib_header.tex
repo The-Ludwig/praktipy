@@ -42,3 +42,25 @@
 
 % schöne Brüche im Text
 \usepackage{xfrac}
+
+% sizing ()
+\usepackage{expl3}
+\usepackage{xparse}
+\usepackage{mleftright}
+\ExplSyntaxOn
+
+\let\ltext=\l
+\RenewDocumentCommand \l {}
+{
+    \TextOrMath{ \ltext }{ \mleft }
+}
+\let\raccent=\raccent\RenewDocumentCommand \r {}
+{
+    \TextOrMath{ \raccent }{ \mright }
+}
+\NewDocumentCommand \dif {m}
+{
+    \mathinner{\symup{d} #1}
+}
+
+\ExplSyntaxOff
