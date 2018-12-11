@@ -12,23 +12,22 @@ The code currently is not very well documented (Allthough tablehandler.py itself
 You will find some examples in ./examples/, which you can use for orientation.
 
 # Dependencies
-* python
+* python 3
 * numpy
 * uncertainties
 * pint
 
-Please install numpy, uncertainties with the following commands (using pip).
+# Installation
+
 ~~~sh
-$ pip install numpy
-$ pip install uncertainties
-$ pip install pint
+$ python3 setup.py install
+
+# If python 3 is installed only
+
+$ python setup.py install
 ~~~
 
-# Installation
-For now: execute install.bash. Maybe I will add a nicer version later (which is in tone to the rest of python).
-~~~sh
-$ ./install.bash
-~~~
+The setup script will download and install all needed dependencies.
 
 # Thanks
-Thanks a lot to [PEP et al.](https://pep-dortmund.org/) for their [Toolbox-Workshop](https://toolbox.pep-dortmund.org/notes.html) and materials they provide. I basicly stole their matplotlib-tex-header! 
+Thanks a lot to [PEP et al.](https://pep-dortmund.org/) for their [Toolbox-Workshop](https://toolbox.pep-dortmund.org/notes.html) and materials they provide. I basicly stole their matplotlib-tex-header!
