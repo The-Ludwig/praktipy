@@ -10,7 +10,7 @@ matplotlib.rcParams.update({
     'text.usetex': True,
     'pgf.rcfonts': False,
     'pgf.texsystem': 'lualatex',
-    'pgf.preamble': r'\input{'+dirname(abspath(__file__))+r'//matplotlib_header.tex'+r'}',
+    'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header.tex'+r'}',
 })
 # use german locale settings for printing 3.4 as 3,4
 try:
