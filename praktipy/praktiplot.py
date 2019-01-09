@@ -19,3 +19,6 @@ except locale.Error:
     print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
     
 plt.ticklabel_format(useLocale=True)
+def cla():
+    plt.cla()
+    plt.ticklabel_format(useLocale=True)
