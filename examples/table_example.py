@@ -4,10 +4,10 @@
 from praktipy import TableHandler, genfromtxt
 
 # Parse in the Table
-th = genfromtxt("exampleTable.txt")
+th = genfromtxt("example_table.txt")
 
 # Print the mean values with errors
 print(th.getMeanValues())
 
 # Generate a tex table
-th.makeTexTable("example.tex", useSIUnitX=True, precision=10, makeHeader=True, standartRules=True)
+th.makeTexTable("example.tex", useSIUnitX=True, precision=10, makeHeader=True, standardRules=True)
