@@ -1,11 +1,5 @@
 # standard imports
 import sys
-
-from scipy.optimize import curve_fit
-from scipy import constants as const
-from pint import UnitRegistry
-from uncertainties import ufloat
-import uncertainties.unumpy as unp
 import numpy as np
 
 from .tablehandler import TableHandler, genfromtxt
@@ -17,6 +11,13 @@ if "matplotlib" in sys.modules or "matplotlib.pyplot" in sys.modules:
 else:
     from .praktiplot import plt, matplotlib, cla
     __all__ += ["plt", "matplotlib", "cla"]
+
+from scipy.optimize import curve_fit
+from scipy import constants as const
+from pint import UnitRegistry
+from uncertainties import ufloat
+import uncertainties.unumpy as unp
+
 
 unit = UnitRegistry()
 noms = unp.nominal_values
