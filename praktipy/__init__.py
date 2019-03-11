@@ -16,7 +16,7 @@ if "matplotlib" in sys.modules or "matplotlib.pyplot" in sys.modules:
     print("Praktipy will not set up the matplotlib backend, because it is already set up.")
 else:
     from .praktiplot import plt, matplotlib, cla
-    __all__ += ["plt", "matplotlib"]
+    __all__ += ["plt", "matplotlib", "cla"]
 
 unit = UnitRegistry()
 noms = unp.nominal_values
@@ -67,6 +67,6 @@ def curveplotfit(f, x, params, N=1000, border=0.05, logscale=False):
 
 units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
 
-__all__ += ["cla", "TableHandler", "np", "ufloat", "unp", "unit", "noms",
+__all__ += ["TableHandler", "np", "ufloat", "unp", "unit", "noms",
             "stds", "const", "polyplotfit", "genfromtxt", "curveplotfit", "curve_fit"]
 __all__ += units
