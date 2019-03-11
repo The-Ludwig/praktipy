@@ -1,14 +1,14 @@
 # standard imports
+import sys
+
 from scipy.optimize import curve_fit
 from scipy import constants as const
 from pint import UnitRegistry
 from uncertainties import ufloat
-from .tablehandler import TableHandler, genfromtxt
-
 import uncertainties.unumpy as unp
 import numpy as np
-import sys
 
+from .tablehandler import TableHandler, genfromtxt
 
 __all__ = []
 
