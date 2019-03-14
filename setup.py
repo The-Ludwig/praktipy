@@ -12,7 +12,7 @@ from setuptools import find_packages, setup, Command
 NAME = 'praktipy'
 DESCRIPTION = 'A little python package to help with the AP in physics at the TU-Dortmund.'
 URL = 'https://github.com/The-Ludwig/praktipy'
-AUTHOR = 'Ludwig Neste <The-Ludwig>'
+AUTHOR = 'Ludwig Neste <The-Ludwig>, Max Uetrecht'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 

@@ -1,284 +1,387 @@
+# to test if something is a number
+import numbers
 import numpy as np
-import uncertainties.unumpy as unp
 from uncertainties import ufloat, UFloat
-import numbers  # to test if something is a number
 
+def gen_from_txt(filename, explicit_none=False):
+    """Generates a multi-datatype table (A python list of python lists,
+    which contains strings, floats and None).
+    You can generate uncertaintie ufloats by writing something like
+    42.000+-3.1415.
 
-def __parseWord__(word):
+    WARNING: Not suitable for very large tables (everything under a few thousand line should be fine though).
+        Use numpy.genfromtxt instead!
+
+    Parameters
+    ----------
+    filename : str
+        The path to the textfile to parse. Look into the examples, for further
+        information on how to format the file.
+    explicitNone : bool, optional
+        Whether the table structure is determend visually by looking 
+        at the first line, or with explicit "Nones" where no value is present.
+        (the default is False, which looks at the file visually)
+    
+    Returns
+    -------
+    list of lists (python lists) [][]
+        The parsed table
+    """
+
+    if(explicit_none):
+        return _gen_from_txt_explicit(filename)
+    else:
+        return _gen_from_txt_visual
+
+def _gen_from_txt_visual(filename):
+    table = []
+    column_lengths = []
+
+    # Parse table
+    with open(filename) as file:
+        for line in file:
+            line = line.rstrip()
+
+            index_end = line.find("#")
+            if index_end != -1:
+                line = line[:index_end]
+
+            # Determine position of columns
+            # len(collumns) == 0
+            if not column_lengths:
+                if line.strip() == "":
+                    continue
+
+                column_lengths = [0]
+                found_first_arg = False
+                in_arg = False
+                in_quotes = False
+
+                for i in range(len(line)):
+                    if line[i] == '#' or line[i] == "\n" or line[i] == "\f":
+                        break
+
+                    if not found_first_arg:
+                        if line[i] != " ":
+                            found_first_arg = True
+                            in_arg = True
+                            if line[i] == '"':
+                                in_quotes = True
+                    elif in_quotes:
+                        if line[i] == '"':
+                            in_quotes = False
+                            in_arg = False
+                    elif not in_arg and line[i] != " ":
+                        column_lengths.append(i)
+                        in_arg = True
+                        if line[i] == '"':
+                            in_quotes = True
+                    elif in_arg and line[i] == " ":
+                        in_arg = False
+
+                for i in column_lengths:
+                    table.append(list())
+
+            found_last = False
+            for i in range(len(column_lengths)-1):
+
+                if(len(line) <= column_lengths[i+1]):
+                    new_word = __parse_word__(line[column_lengths[i]:])
+                    table[i].append(new_word)
+                    found_last = True
+                    # Fill table with nones so we get a rectangular shape
+                    for j in range(i+1, len(column_lengths)):
+                        table[j].append(None)
+                    break
+
+                new_word = __parse_word__(line[column_lengths[i]:column_lengths[i+1]])
+                table[i].append(new_word)
+
+            if not found_last:
+                new_word = __parse_word__(line[column_lengths[-1]:])
+                table[-1].append(new_word)
+
+        file.close()
+
+    return table
+
+def _gen_from_txt_explicit(filename):
+    # Can you see my c++-heritage?
+    class StateEnum:
+        IN_WORD     = 0
+        IN_QUOTES   = 1
+        IN_BETWEEN  = 2
+
+    # Table to return
+    table = []
+
+    # Parse file
+    with open(filename) as file:
+        # Parse every line
+        for line in file:
+            # to remember column
+            column = 0
+            # Ignore whitespace and comments (with #)
+            line = line.strip()
+            index_end = line.find("#")
+            if index_end != -1:
+                line = line[:index_end]
+
+            new_word = ""
+            state = StateEnum.IN_BETWEEN
+
+            for char in line:
+                if(state == StateEnum.IN_BETWEEN):
+                    if(char == " "):
+                        pass
+                    elif(char == "\n" or char == "\f" or char == "\0"):
+                        break
+                    elif(char == '"'):
+                        state = StateEnum.IN_QUOTES
+                        new_word += char
+                    else:
+                        new_word += char
+                        state = StateEnum.IN_WORD
+                elif(state == StateEnum.IN_QUOTES):
+                    if(char == " "):
+                        new_word += char
+                    elif(char == "\n" or char == "\f" or char == "\0"):
+                        __add_word__(__parse_word__(new_word), table, column)
+                        column += 1
+                        new_word = ""
+                        break
+                    elif(char == '"'):
+                        new_word += char
+                        __add_word__(__parse_word__(new_word), table, column)
+                        column += 1
+                        new_word = ""
+                        state = StateEnum.IN_BETWEEN
+                    else: 
+                        new_word += char   
+                elif(state == StateEnum.IN_WORD):
+                    if(char == " "):
+                        __add_word__(__parse_word__(new_word), table, column)
+                        column += 1
+                        new_word = ""
+                        state = StateEnum.IN_BETWEEN
+                    elif(char == "\n" or char == "\f" or char == "\0"):
+                        __add_word__(__parse_word__(new_word), table, column)
+                        column += 1
+                        new_word = ""
+                        break
+                    elif(char == '"'):
+                        new_word += char
+                    else:
+                        new_word += char
+            
+            if(new_word != ""):
+                __add_word__(__parse_word__(new_word), table, column)
+
+        file.close()
+    return table 
+
+def __add_word__(word, table, column):
+    if len(table) < column + 1:
+        table.append([word])
+        return
+    table[column].append(word)
+    
+def __parse_word__(word):
     """Parse a word from a tablefile"""
 
     word = word.strip()
-    if len(word) == 0:
+    # len(word) == 0
+    if not word:
         return None
     if word[-1] == '"' and word[0] == '"':
         return word[1:-1]
 
+    if(word == "None"):
+        return None
+    
+    # parse uncertainty value
+    uncertainty_rep = word.split("+-")
+    if(len(uncertainty_rep) == 2):
+        try:
+            ret = ufloat(float(uncertainty_rep[0]), float(uncertainty_rep[1]))
+            return ret
+        except ValueError:
+            return word
+
     try:
         ret = float(word)
         return float(ret)
-    except:
+    except ValueError:
         return word
 
+def mean_values(table):
+    """Returns the mean values and errors of the given tables as ufloats."""
 
-def genfromtxt(filename):
-    """Generates a Tablehandler out of the table in a given file"""
+    _raw_dict = raw_dict(table)
+    mean_values = []
+    for v in _raw_dict.items():
+        mean_values.append(np.mean(ufloat(np.mean(v[1]), np.std(v[1]))))
 
-    # Open file and get lines
-    with open(filename) as f:
-        lines = f.readlines()
-        f.close()
+    return mean_values
 
-    # Parse table
-    table = []
-    columns = []
-    for line in lines:
-        line = line.rstrip()
+def mean_values_dict(table):
+    """Returns the mean values and errors of the given tables as ufloats."""
 
-        indexH = line.find("#")
-        if indexH != -1:
-            line = line[:indexH]
+    _raw_dict = raw_dict(table)
+    mean_values = {}
+    for v in _raw_dict.items():
+        mean_values[v[0]].append(np.mean(ufloat(np.mean(v[1]), np.std(v[1]))))
 
-        # Determine position of columns
-        if len(columns) == 0:
-            if line.strip() == "":
-                continue
+    return mean_values
 
-            columns = [0]
-            foundFirstArg = False
-            inArg = False
-            inQuotes = False
+def dict_from_table(table):
+    """Retuns a dictionary mapping the first line to its columns"""
+    dict_ret = {}
+    for _c in table:
+        dict_ret[_c[0]] = _c[1:]
+    return dict_ret
 
-            for i in range(len(line)):
-                if line[i] == '#' or line[i] == "\n" or line[i] == "\f":
-                    break
+def raw_dict(table):
+    """Returns a dictionary mapping the first line to its non-string collumn values"""
+    dictRet = {}
+    for c in table:
+        dictRet[c[0]] = []
+        for j in c[1:]:
+            # Use isinstance to account for numpy floats.
+            if isinstance(j, numbers.Number) or isinstance(j, UFloat):
+                dictRet[c[0]].append(j)
 
-                if foundFirstArg == False:
-                    if line[i] != " ":
-                        foundFirstArg = True
-                        inArg = True
-                        if line[i] == '"':
-                            inQuotes = True
-                elif inQuotes:
-                    if line[i] == '"':
-                        inQuotes = False
-                        inArg = False
-                elif inArg == False and line[i] != " ":
-                    columns.append(i)
-                    inArg = True
-                    if line[i] == '"':
-                        inQuotes = True
-                elif inArg and line[i] == " ":
-                    inArg = False
+    return dictRet
 
-            for i in columns:
-                table.append(list())
+def transposed(table):
+    """Returns the transposition of the table."""
+    if table == None:
+        return None
 
-        found_last = False
+    t_table = []
+    for i in table:
+        while len(i) > len(t_table):
+            t_table.append([])
 
-        for i in range(len(columns)-1):
+    for collumn in table:
+        for i in range(len(collumn)):
+            t_table[i].append(collumn[i])
 
-            if(len(line) <= columns[i+1]):
-                newWord = __parseWord__(line[columns[i]:])
-                table[i].append(newWord)
-                found_last = True
+    return t_table
 
-                # Fill table with nones so we get a rectangular shape
-                for j in range(i+1, len(columns)):
-                    table[j].append(None)
-                break
+def raw_data(table):
+    """Returns numbers only"""
 
-            newWord = __parseWord__(line[columns[i]:columns[i+1]])
-            table[i].append(newWord)
+    data = []
+    for i in table:
+        data.append([])
 
-        if not found_last:
-            newWord = __parseWord__(line[columns[-1]:])
-            table[-1].append(newWord)
+    for i in range(len(table)):
+        for w in table[i]:
+            if isinstance(w, numbers.Number):
+                data[i].append(w)
+    return data
 
-    return TableHandler(table)
+def gen_tex_table(table, filename, useSIUnitX=True, precision=None, makeHeader=True, standardRules=True):
+    """Generates a .tex table into file"""
 
+    # Generate transposed table
+    t_table = transposed(table)
+    # Search length and replace Nones
+    max_len = 0
+    max_row_len = 0
 
-class TableHandler:
-    """ Class to handle tables in the internship easily """
+    # find length of row
+    for i in t_table:
+        if max_row_len < len(i):
+            max_row_len = len(i)
 
-    def __init__(self, table=None):
-        """Initalize table, eather from given table or from Filename"""
-        self.table = table
+    for i in range(len(t_table)):
+        if len(t_table[i]) < max_row_len:
+            t_table[i] += (max_row_len - len(t_table[i])) * [""]
 
-    def getDict(self):
-        """Retuns a dictionary mapping the first line to its columns"""
-        dicti = {}
-        for c in self.table:
-            dicti[c[0]] = c[1:]
-        return dicti
+        for j in range(len(t_table[i])):
+            if(t_table[i][j] == None):
+                t_table[i][j] = ""
 
-    def getTransposedTable(self, table=None):
-        """Returns the transposition of the (underlaying, if table = None) table."""
-        if table == None:
-            table = self.table
+            if max_len < len(str(t_table[i][j])):
+                max_len = len(str(t_table[i][j]))
 
-        tTable = []
-        for i in table:
-            while len(i) > len(tTable):
-                tTable.append([])
+    # account for SIUnitX stuff
+    max_len += 10
 
-        for c in table:
-            for i in range(len(c)):
-                tTable[i].append(c[i])
+    # Write TeX
+    file = open(filename, "w+")
 
-        return tTable
+    if makeHeader:
+        file.write(r"\begin{table}"+"\n")
 
-    def transpose(self):
-        """Transposes underlaying table"""
-        self.table = self.getTransposedTable()
-
-    def insertRow(self, row, index=None):
-        """Add a segment to the table
-        row: 1d Table to  add
-        index: index to add the table to. Set to None to append"""
-        if index == None:
-            self.table.append(row)
-        else:
-            self.table.insert(index, row)
-
-    def popRow(self, index=-1):
-        """Deletes row with index index"""
-        self.table.pop(index)
-
-    def getRawDict(self):
-        """Returns a dictionary mapping the first line to its non-string collumn values"""
-        dicti = {}
-        for c in self.table:
-            dicti[c[0]] = []
-            for j in c[1:]:
-                if isinstance(j, numbers.Number):
-                    dicti[c[0]].append(j)
-
-        return dicti
-
-    def getRawData(self):
-        """Returns only floats and ints"""
-
-        data = []
-        for i in self.table:
-            data.append([])
-
-        for i in range(len(self.table)):
-            for w in self.table[i]:
-                if isinstance(w, numbers.Number):
-                    data[i].append(w)
-        return data
-
-    def makeTexTable(self, filename, useSIUnitX=True, precision=None, makeHeader=True, standardRules=True):
-        """Generates a .tex table into file"""
-
-        # Generate transposed table
-        tTable = self.getTransposedTable()
-        # Search length and replace Nones
-        maxLen = 0
-
-        maxRowLen = 0
-
-        # find length of row
-        for i in tTable:
-            if maxRowLen < len(i):
-                maxRowLen = len(i)
-
-        for i in range(len(tTable)):
-            if len(tTable[i]) < maxRowLen:
-                tTable[i] += (maxRowLen - len(tTable[i])) * [""]
-
-            for j in range(len(tTable[i])):
-                if(tTable[i][j] == None):
-                    tTable[i][j] = ""
-
-                if maxLen < len(str(tTable[i][j])):
-                    maxLen = len(str(tTable[i][j]))
-
-        # account for SIUnitX stuff
-        maxLen += 10
-
-        # Write TeX
-        file = open(filename, "w+")
-
-        if makeHeader:
-            file.write(r"\begin{table}"+"\n")
-
-            file.write("\t"+r"\caption{TABLE}"+"\n")
-            file.write("\t"+r"\label{tab:NAME}"+"\n")
-            if(useSIUnitX):
-                file.write("\t"+r"\sisetup{table-format=X.")
-                if(precision != None):
-                    file.write(str(int(precision)))
-                else:
-                    file.write("X")
-                file.write("}\n")
-
-            file.write("\t"+r"\begin{tabular}{")
-            if useSIUnitX:
-                for i in self.table[:-1]:
-                    file.write("S ")
-                file.write("S")
+        file.write("\t"+r"\caption{TABLE}"+"\n")
+        file.write("\t"+r"\label{tab:NAME}"+"\n")
+        if(useSIUnitX):
+            file.write("\t"+r"\sisetup{table-format=X.")
+            if(precision != None):
+                file.write(str(int(precision)))
             else:
-                for i in self.table[:-1]:
-                    file.write("c ")
-                file.write("c")
+                file.write("X")
             file.write("}\n")
 
-            if standardRules:
-                if makeHeader:
-                    file.write("\t\t")
-                file.write(r"\toprule"+"\n")
-
-        def parseTexWord(word, end=False):
-            newWord = ""
-            if isinstance(word, numbers.Number) or isinstance(word, UFloat):
-                if precision != None:
-                    newWord = ("{:."+str(int(precision))+"f}").format(word)
-                else:
-                    newWord = str(word)
-            else:
-                newWord = str(word)
-                if(useSIUnitX):
-                    newWord = "{"+newWord+"}"
-
-            if makeHeader:
-                file.write("\t\t")
-
-            file.write(newWord+(maxLen - len(newWord))*" ")
-
-            if not end:
-                file.write(" & ")
-
-        for l in range(len(tTable)):
-
-            if standardRules and l == 1:
-                if makeHeader:
-                    file.write("\t\t")
-                file.write(r"\midrule"+"\n")
-
-            for w in tTable[l][:-1]:
-                parseTexWord(w)
-
-            parseTexWord(tTable[l][-1], end=True)
-            file.write(r"  \\"+"\n")
+        file.write("\t"+r"\begin{tabular}{")
+        if useSIUnitX:
+            for i in table[:-1]:
+                file.write("S ")
+            file.write("S")
+        else:
+            for i in table[:-1]:
+                file.write("c ")
+            file.write("c")
+        file.write("}\n")
 
         if standardRules:
             if makeHeader:
                 file.write("\t\t")
-            file.write(r"\bottomrule"+"\n")
+            file.write(r"\toprule"+"\n")
+
+    def __parse_tex_word__(word, end=False):
+        newWord = ""
+        if isinstance(word, numbers.Number) or isinstance(word, UFloat):
+            if precision != None:
+                newWord = ("{:."+str(int(precision))+"f}").format(word)
+            else:
+                newWord = str(word)
+        else:
+            newWord = str(word)
+            if(useSIUnitX):
+                newWord = "{"+newWord+"}"
 
         if makeHeader:
-            file.write("\t"+r"\end{tabular}"+"\n")
-            file.write(r"\end{table}")
+            file.write("\t\t")
 
-        file.close()
+        file.write(newWord+(max_len - len(newWord))*" ")
 
-    def getMeanValues(self):
-        """Returns the mean values and errors of them as ufloats"""
+        if not end:
+            file.write(" & ")
 
-        rawDict = self.getRawDict()
-        meanValues = {}
-        for v in rawDict.items():
-            meanValues[v[0]] = np.mean(ufloat(np.mean(v[1]), np.std(v[1])))
+    for l in range(len(t_table)):
 
-        return meanValues
+        if standardRules and l == 1:
+            if makeHeader:
+                file.write("\t\t")
+            file.write(r"\midrule"+"\n")
+
+        for w in t_table[l][:-1]:
+            __parse_tex_word__(w)
+
+        __parse_tex_word__(t_table[l][-1], end=True)
+        file.write(r"  \\"+"\n")
+
+    if standardRules:
+        if makeHeader:
+            file.write("\t\t")
+        file.write(r"\bottomrule"+"\n")
+
+    if makeHeader:
+        file.write("\t"+r"\end{tabular}"+"\n")
+        file.write(r"\end{table}")
+
+    file.close()
