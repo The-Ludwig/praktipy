@@ -15,4 +15,4 @@ Options:
 * standart rules: bool ="Whether to put \toprule \midrule \bottomrule"
 * subtables: int = "number of subtables to split the table into"
 * precision: int/int[] ="precision for all columns or every column on its own.
-* 
+* or:format: str/str[]="example number to format the numbers as such"
