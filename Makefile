@@ -1,4 +1,4 @@
-.phony= test
+.phony= test install
 
 install:
 	python3 setup.py install

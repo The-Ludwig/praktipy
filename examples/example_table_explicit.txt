@@ -1,7 +1,7 @@
 # This is a Test table for the tablehandler
 "Messwert 1" "Messwert 2" "Messwert 3"
 "W/K" "m" "Meter"
-3 "10.1" None         
+3 "10.1" None
 3 10.1 10.2
 3 "ohoh wert" 10.34
 3 None 3.14

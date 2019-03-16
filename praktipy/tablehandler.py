@@ -18,17 +18,17 @@ def gen_from_txt(filename, explicit_none=False):
         The path to the textfile to parse. Look into the examples, for further
         information on how to format the file.
     explicitNone : bool, optional
-        Whether the table structure is determend visually by looking 
+        Whether the table structure is determend visually by looking
         at the first line, or with explicit "Nones" where no value is present.
         (the default is False, which looks at the file visually)
-    
+
     Returns
     -------
     list of lists (python lists) [][]
         The parsed table
     """
 
-    if(explicit_none):
+    if explicit_none:
         return _gen_from_txt_explicit(filename)
     else:
         return _gen_from_txt_visual
@@ -42,12 +42,13 @@ def _gen_from_txt_visual(filename):
         for line in file:
             line = line.rstrip()
 
+            # check for comments beginning with '#'
             index_end = line.find("#")
             if index_end != -1:
                 line = line[:index_end]
 
             # Determine position of columns
-            # len(collumns) == 0
+            # len(columns) == 0
             if not column_lengths:
                 if line.strip() == "":
                     continue
@@ -105,7 +106,7 @@ def _gen_from_txt_visual(filename):
 
     return table
 
-def _gen_from_txt_explicit(filename):
+def _gen_from_txt_explicit(fi lename):
     # Can you see my c++-heritage?
     class StateEnum:
         IN_WORD     = 0
@@ -131,21 +132,21 @@ def _gen_from_txt_explicit(filename):
             state = StateEnum.IN_BETWEEN
 
             for char in line:
-                if(state == StateEnum.IN_BETWEEN):
-                    if(char == " "):
+                if state == StateEnum.IN_BETWEEN:
+                    if char == " ":
                         pass
-                    elif(char == "\n" or char == "\f" or char == "\0"):
+                    elif char == "\n" or char == "\f" or char == "\0":
                         break
-                    elif(char == '"'):
+                    elif char == '"':
                         state = StateEnum.IN_QUOTES
                         new_word += char
                     else:
                         new_word += char
                         state = StateEnum.IN_WORD
-                elif(state == StateEnum.IN_QUOTES):
-                    if(char == " "):
+                elif state == StateEnum.IN_QUOTES:
+                    if char == " ":
                         new_word += char
-                    elif(char == "\n" or char == "\f" or char == "\0"):
+                    elif char == "\n" or char == "\f" or char == "\0":
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
                         new_word = ""
@@ -156,9 +157,9 @@ def _gen_from_txt_explicit(filename):
                         column += 1
                         new_word = ""
                         state = StateEnum.IN_BETWEEN
-                    else: 
-                        new_word += char   
-                elif(state == StateEnum.IN_WORD):
+                    else:
+                        new_word += char
+                elif state == StateEnum.IN_WORD:
                     if(char == " "):
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
@@ -169,23 +170,23 @@ def _gen_from_txt_explicit(filename):
                         column += 1
                         new_word = ""
                         break
-                    elif(char == '"'):
+                    elif char == '"':
                         new_word += char
                     else:
                         new_word += char
-            
-            if(new_word != ""):
+
+            if new_word != "":
                 __add_word__(__parse_word__(new_word), table, column)
 
         file.close()
-    return table 
+    return table
 
 def __add_word__(word, table, column):
     if len(table) < column + 1:
         table.append([word])
         return
     table[column].append(word)
-    
+
 def __parse_word__(word):
     """Parse a word from a tablefile"""
 
@@ -198,7 +199,7 @@ def __parse_word__(word):
 
     if(word == "None"):
         return None
-    
+
     # parse uncertainty value
     uncertainty_rep = word.split("+-")
     if(len(uncertainty_rep) == 2):
