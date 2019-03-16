@@ -3,6 +3,7 @@ import numbers
 import numpy as np
 from uncertainties import ufloat, UFloat
 
+
 def gen_from_txt(filename, explicit_none=False):
     """Generates a multi-datatype table (A python list of python lists,
     which contains strings, floats and None).
@@ -31,7 +32,8 @@ def gen_from_txt(filename, explicit_none=False):
     if explicit_none:
         return _gen_from_txt_explicit(filename)
     else:
-        return _gen_from_txt_visual
+        return _gen_from_txt_visual(filename)
+
 
 def _gen_from_txt_visual(filename):
     table = []
@@ -95,7 +97,8 @@ def _gen_from_txt_visual(filename):
                         table[j].append(None)
                     break
 
-                new_word = __parse_word__(line[column_lengths[i]:column_lengths[i+1]])
+                new_word = __parse_word__(
+                    line[column_lengths[i]:column_lengths[i+1]])
                 table[i].append(new_word)
 
             if not found_last:
@@ -106,12 +109,13 @@ def _gen_from_txt_visual(filename):
 
     return table
 
-def _gen_from_txt_explicit(fi lename):
+
+def _gen_from_txt_explicit(filename):
     # Can you see my c++-heritage?
     class StateEnum:
-        IN_WORD     = 0
-        IN_QUOTES   = 1
-        IN_BETWEEN  = 2
+        IN_WORD = 0
+        IN_QUOTES = 1
+        IN_BETWEEN = 2
 
     # Table to return
     table = []
@@ -181,11 +185,13 @@ def _gen_from_txt_explicit(fi lename):
         file.close()
     return table
 
+
 def __add_word__(word, table, column):
     if len(table) < column + 1:
         table.append([word])
         return
     table[column].append(word)
+
 
 def __parse_word__(word):
     """Parse a word from a tablefile"""
@@ -215,6 +221,7 @@ def __parse_word__(word):
     except ValueError:
         return word
 
+
 def mean_values(table):
     """Returns the mean values and errors of the given tables as ufloats."""
 
@@ -224,6 +231,7 @@ def mean_values(table):
         mean_values.append(np.mean(ufloat(np.mean(v[1]), np.std(v[1]))))
 
     return mean_values
+
 
 def mean_values_dict(table):
     """Returns the mean values and errors of the given tables as ufloats."""
@@ -235,12 +243,14 @@ def mean_values_dict(table):
 
     return mean_values
 
+
 def dict_from_table(table):
     """Retuns a dictionary mapping the first line to its columns"""
     dict_ret = {}
     for _c in table:
         dict_ret[_c[0]] = _c[1:]
     return dict_ret
+
 
 def raw_dict(table):
     """Returns a dictionary mapping the first line to its non-string collumn values"""
@@ -253,6 +263,7 @@ def raw_dict(table):
                 dictRet[c[0]].append(j)
 
     return dictRet
+
 
 def transposed(table):
     """Returns the transposition of the table."""
@@ -270,6 +281,7 @@ def transposed(table):
 
     return t_table
 
+
 def raw_data(table):
     """Returns numbers only"""
 
@@ -282,6 +294,130 @@ def raw_data(table):
             if isinstance(w, numbers.Number):
                 data[i].append(w)
     return data
+
+
+def gen_full_tex_table(
+        table, filename,
+        tex_caption, tex_label,
+        subtables, precision,
+        midrule):
+    """Generates a .tex file containing only a table. 
+    The whole file does not have to be modified anymore,
+    it can be directly included with \\input{}.
+
+    Uses LaTeX packages (include them!):
+    * \\usepackage[
+            locale=DE,
+            separate-uncertainty=true,  % use \pm
+            per-mode=symbol-or-fraction,
+            %per-mode=reciprocal,
+            %output-decimal-marker=.,
+        ]{siunitx}
+    * \\susepackage{subcaption}
+
+    Uses S
+    Parameters
+    ----------
+    table : [][] list of lists
+        The table which should be parsed.
+    filename : str
+        The (relative) filepath where the table is saved.
+    tex_caption : str
+        The caption of the table in LaTeX.
+    tex_label : str
+        The label of the table in LaTeX.
+    subtables : int or None
+        The number of subtables to split into. (0 or None, for no subtables)
+    precision : int[] or int or str[] or str
+        The precision per column (as a list) or the precision for every number.
+        The format string per column (see https://docs.python.org/3/library/string.html#format-string-syntax)
+        or the format string for every number.
+    midrule : int
+        After which row to put the midrule. Every row after that will be treated as the header.
+    """
+    # Make every column have the same length
+    rows = 0
+    for column in table:
+        if len(column) > rows:
+            rows = len(column)
+
+    # Init empty table
+    str_table = [ ["" for i in range(len(table))] for j in range(rows)]
+
+    # Find rows with ufloats
+    ufloat_column = []
+    max_len_column = [0 for i in range(len(table))]
+
+    # Generate all the strings in the table
+    for column_index, column  in enumerate(table):
+        for row_index, cell in enumerate(column):
+            if isinstance(cell, UFloat):
+                ufloat_column += [column_index]
+                str_table[row_index][column_index] = __tex_format__(cell, precision, column_index)
+                if (max(len(str_table[row_index][column_index][0]),
+                         len(str_table[row_index][column_index][1]))
+                        > max_len_column[column_index]):
+                    max_len_column[column_index] = max(len(str_table[row_index][column_index][0]),
+                                                        len(str_table[row_index][column_index][1]))
+            else:
+                str_table[row_index][column_index] = __tex_format__(cell, precision, column_index)
+                if max_len_column[column_index] < len(str_table[row_index][column_index]):
+                    max_len_column[column_index] = len(str_table[row_index][column_index])
+    
+    for row_index, row in enumerate(str_table):
+        for col_index, cell in enumerate(row[:-1]):
+            print(__tex_cell__(cell, max_len_column[col_index]), end="")
+            print(" & ", end="")
+        print(__tex_cell__(row[-1], max_len_column[-1]), end="")
+        print(r"\\")
+
+def __tex_cell__(cell, max_len_column):
+    remaining_spaces = max_len_column - len(cell)
+    while remaining_spaces > 0:
+        cell += " "
+        remaining_spaces -= 1
+    return cell
+
+def __tex_format__(cell, precision, column=None):
+
+    if isinstance(precision, list):
+        formatter = precision[column]
+    else:
+        formatter = precision
+
+    # Numbers
+    if isinstance(cell, numbers.Number):
+        if isinstance(formatter, int):
+            if formatter < 0:
+                raise ValueError("Negative precision ("+formatter+") makes no sense.")
+            formatter = "{:."+str(formatter)+"f}"
+
+        elif isinstance(formatter, float):
+            if formatter < 0:
+                raise ValueError("Negative precision ("+formatter+") makes no sense.")
+            formatter = ("{:" + str(int(formatter)) + "."
+                         + str(int(round((formatter - int(formatter))*10))) + "f}"
+                        )
+
+        elif isinstance(formatter, str):
+            formatter = "{:"+formatter+"f}"
+
+        assert isinstance(formatter, str)
+
+        return formatter.format(cell)
+
+
+    if isinstance(cell, UFloat):
+        if isinstance(formatter, str):
+            return ("{:"+formatter+"u}").format(cell).split("+/-")
+
+        # Let uncertainty handle the precision
+        return "{:u}".format(cell).split("+/-")   
+
+    # No known rules (Maybe it is a string)
+    return str(cell)
+
+
 
 def gen_tex_table(table, filename, useSIUnitX=True, precision=None, makeHeader=True, standardRules=True):
     """Generates a .tex table into file"""
