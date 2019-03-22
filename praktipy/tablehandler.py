@@ -1,7 +1,10 @@
 # to test if something is a number
 import numbers
+import warnings
+import math
 import numpy as np
 from uncertainties import ufloat, UFloat
+from math import log10
 
 
 def gen_from_txt(filename, explicit_none=False):
@@ -296,12 +299,12 @@ def raw_data(table):
     return data
 
 
-def gen_full_tex_table(
+def gen_tex_table(
         table, filename,
         tex_caption, tex_label,
         subtables, precision,
         midrule):
-    """Generates a .tex file containing only a table. 
+    """Generates a .tex file containing only a table.
     The whole file does not have to be modified anymore,
     it can be directly included with \\input{}.
 
@@ -320,56 +323,152 @@ def gen_full_tex_table(
     ----------
     table : [][] list of lists
         The table which should be parsed.
+    ===
     filename : str
         The (relative) filepath where the table is saved.
+    ===
     tex_caption : str
         The caption of the table in LaTeX.
+    ===
     tex_label : str
         The label of the table in LaTeX.
+    ===
     subtables : int or None
-        The number of subtables to split into. (0 or None, for no subtables)
+    The number of subtables to split into. (0 or None, for no subtables)
+    ===
     precision : int[] or int or str[] or str
         The precision per column (as a list) or the precision for every number.
         The format string per column (see https://docs.python.org/3/library/string.html#format-string-syntax)
         or the format string for every number.
+    ===
     midrule : int
         After which row to put the midrule. Every row after that will be treated as the header.
     """
-    # Make every column have the same length
+    # Track row size to make it rectangular
     rows = 0
-    for column in table:
+    # get the column meta data an put that in the list as __ColumnMeta
+    column_meta = []
+    # Gather Meta information and parse strings which can be parsed
+    for col_index, column  in enumerate(table):
+        meta_data = __ColumnMeta()
+        if isinstance(precision, list):
+            meta_data.precision = precision[col_index]
+        else:
+            meta_data.precision = precision
         if len(column) > rows:
             rows = len(column)
-
-    # Init empty table
-    str_table = [ ["" for i in range(len(table))] for j in range(rows)]
-
-    # Find rows with ufloats
-    ufloat_column = []
-    max_len_column = [0 for i in range(len(table))]
-
-    # Generate all the strings in the table
-    for column_index, column  in enumerate(table):
         for row_index, cell in enumerate(column):
             if isinstance(cell, UFloat):
-                ufloat_column += [column_index]
-                str_table[row_index][column_index] = __tex_format__(cell, precision, column_index)
-                if (max(len(str_table[row_index][column_index][0]),
-                         len(str_table[row_index][column_index][1]))
-                        > max_len_column[column_index]):
-                    max_len_column[column_index] = max(len(str_table[row_index][column_index][0]),
-                                                        len(str_table[row_index][column_index][1]))
-            else:
-                str_table[row_index][column_index] = __tex_format__(cell, precision, column_index)
-                if max_len_column[column_index] < len(str_table[row_index][column_index]):
-                    max_len_column[column_index] = len(str_table[row_index][column_index])
-    
+                meta_data.HAS_UFloats = True
+                if cell.std_dev >= 1 and meta_data.MAX_MAGNITUDE < int(log10(cell.std_dev)) + 1:
+                    meta_data.MAX_MAGNITUDE = int(log10(cell.std_dev)) + 1
+                if cell.nominal_value >= 1 and meta_data.MAX_MAGNITUDE < int(log10(cell.nominal_value)) + 1:
+                    meta_data.MAX_MAGNITUDE = int(log10(cell.nominal_value)) + 1
+            elif isinstance(cell, numbers.Number):
+                if cell >= 1 and meta_data.MAX_MAGNITUDE < int(log10(cell)) + 1:
+                    meta_data.MAX_MAGNITUDE = int(log10(cell)) + 1
+        column_meta.append(meta_data)
+
+    # Generate empty string table, to maintain rectangular size
+    str_table = [["" for j in table] for i in range(rows)]
+
+    # Generate all the strings in the table
+    for col_index, column  in enumerate(table):
+        for row_index, cell in enumerate(column):
+            new_str = __tex_format__(cell, column_meta, col_index)
+            if column_meta[col_index].MAX_LEN < len(new_str):
+                column_meta[col_index].MAX_LEN = len(new_str)
+            str_table[row_index][col_index] = new_str
+
+    # Make the file
+    with open(filename, "w") as file:
+        file.write(r"\begin{table}"+"\n")
+        file.write("\t"+r"\caption{"+tex_caption+"}\n")
+        file.write("\t"+r"\label{"  +tex_label+"}\n")
+        file.write("\t"+r"\centering"+"\n")
+        # Make subtables
+        if subtables and subtables != 0:
+            if not isinstance(subtables, int):
+                raise ValueError("Subtables must be None or a not negative integer.")
+            header = str_table[:midrule]
+            table = str_table[midrule:]
+            rows_st = rows - midrule
+            rows_per_subtable = math.ceil(rows_st/subtables)
+            for i in range(subtables-1):
+                file.write("\t"+r"\begin{subtable}{"+str(round(1.0/subtables - 0.01, 2))+r"\textwidth"+"}\n")
+                file.write("\t\t"+r"\centering"+"\n")
+                __write_tabular__(file, header+table[i*rows_per_subtable:(i+1)*rows_per_subtable]
+                                  , column_meta, midrule, level=2)
+                file.write("\t"+r"\end{subtable}"+"\n")
+            # Write the last subtable
+            file.write("\t"+r"\begin{subtable}{"+str(round(1.0/subtables - 0.01, 2))+r"\textwidth"+"}\n")
+            file.write("\t\t"+r"\centering"+"\n")
+            __write_tabular__(file, header+table[rows_per_subtable*(subtables-1):]
+                                , column_meta, midrule, level=2, fillTo=midrule+rows_per_subtable)
+            file.write("\t"+r"\end{subtable}"+"\n")
+                
+        else:
+            __write_tabular__(file, str_table, column_meta, midrule)
+        
+        file.write(r"\end{table}")
+        file.close()
+
+def __write_tabular__(file, str_table, column_meta, midrule, level=1, fillTo=None):
+    for i in range(level):
+        file.write("\t")
+    file.write(r"\begin{tabular}{"+__si_table_header__(column_meta)+"}\n")
+    for i in range(level):
+        file.write("\t")
+    file.write("\t"+r"\toprule"+"\n")
     for row_index, row in enumerate(str_table):
+        for i in range(level):
+            file.write("\t")
+        file.write("\t")
         for col_index, cell in enumerate(row[:-1]):
-            print(__tex_cell__(cell, max_len_column[col_index]), end="")
-            print(" & ", end="")
-        print(__tex_cell__(row[-1], max_len_column[-1]), end="")
-        print(r"\\")
+            file.write(__tex_cell__(cell, column_meta[col_index].MAX_LEN))
+            file.write(" & ")
+        file.write(__tex_cell__(row[-1], column_meta[-1].MAX_LEN))
+        file.write(r"\\"+"\n")
+        if row_index + 1 == midrule:
+            for i in range(level):
+                file.write("\t")
+            file.write("\t")
+            file.write(r"\midrule"+"\n")
+    if fillTo is not None and fillTo > len(str_table):
+        for i in range(fillTo - len(str_table)):
+            for col_index, cell in enumerate(str_table[-1][:-1]):
+                file.write(r"\phantom{"+__tex_cell__(cell, column_meta[col_index].MAX_LEN)+"}")
+                file.write(" & ")
+            file.write(r"\phantom{"+__tex_cell__(row[-1], column_meta[-1].MAX_LEN)+"}")
+            file.write(r"\\"+"\n")
+
+    for i in range(level):
+        file.write("\t")
+    file.write("\t"+r"\bottomrule"+"\n")
+    for i in range(level):
+        file.write("\t")
+    file.write(r"\end{tabular}"+"\n")
+
+class __ColumnMeta:
+    MAX_LEN = 0
+    HAS_UFloats = False
+    MAX_MAGNITUDE = 1
+    precision = None
+
+def __si_table_header__(column_meta):
+    ret = ""
+    for col in column_meta:
+        if isinstance(col.precision, str):
+            ret += r"S[table-format="+ col.precision +r"] "
+        else:
+            ret += r"S[table-format="+ str(col.MAX_MAGNITUDE)+"."+str(col.precision) +r"] "
+        if col.HAS_UFloats:
+            ret += r"@{${}\pm{}$} "
+            if isinstance(col.precision, str):
+                ret += r"S[table-format="+ col.precision +r"] "
+            else:
+                ret += r"S[table-format="+ str(col.MAX_MAGNITUDE)+"."+str(col.precision) +r"] "
+    return ret
 
 def __tex_cell__(cell, max_len_column):
     remaining_spaces = max_len_column - len(cell)
@@ -378,12 +477,9 @@ def __tex_cell__(cell, max_len_column):
         remaining_spaces -= 1
     return cell
 
-def __tex_format__(cell, precision, column=None):
+def __tex_format__(cell, column_meta, column_index):
 
-    if isinstance(precision, list):
-        formatter = precision[column]
-    else:
-        formatter = precision
+    formatter = column_meta[column_index].precision
 
     # Numbers
     if isinstance(cell, numbers.Number):
@@ -401,6 +497,10 @@ def __tex_format__(cell, precision, column=None):
 
         elif isinstance(formatter, str):
             formatter = "{:"+formatter+"f}"
+        
+        if column_meta[column_index].HAS_UFloats:
+            warnings.warn("You have normal numbers in a column where one or more UFloats exist. That can lead to ugly tables.")
+            formatter += "&0"
 
         assert isinstance(formatter, str)
 
@@ -409,116 +509,15 @@ def __tex_format__(cell, precision, column=None):
 
     if isinstance(cell, UFloat):
         if isinstance(formatter, str):
-            return ("{:"+formatter+"u}").format(cell).split("+/-")
+            cell_ufloat =  ("{:"+formatter+"u}").format(cell).split("+/-")
+        else:
+            # Let uncertainty handle the precision
+            cell_ufloat = "{:u}".format(cell).split("+/-")
 
-        # Let uncertainty handle the precision
-        return "{:u}".format(cell).split("+/-")   
+        return cell_ufloat[0]+" & "+cell_ufloat[1]
 
     # No known rules (Maybe it is a string)
-    return str(cell)
-
-
-
-def gen_tex_table(table, filename, useSIUnitX=True, precision=None, makeHeader=True, standardRules=True):
-    """Generates a .tex table into file"""
-
-    # Generate transposed table
-    t_table = transposed(table)
-    # Search length and replace Nones
-    max_len = 0
-    max_row_len = 0
-
-    # find length of row
-    for i in t_table:
-        if max_row_len < len(i):
-            max_row_len = len(i)
-
-    for i in range(len(t_table)):
-        if len(t_table[i]) < max_row_len:
-            t_table[i] += (max_row_len - len(t_table[i])) * [""]
-
-        for j in range(len(t_table[i])):
-            if(t_table[i][j] == None):
-                t_table[i][j] = ""
-
-            if max_len < len(str(t_table[i][j])):
-                max_len = len(str(t_table[i][j]))
-
-    # account for SIUnitX stuff
-    max_len += 10
-
-    # Write TeX
-    file = open(filename, "w+")
-
-    if makeHeader:
-        file.write(r"\begin{table}"+"\n")
-
-        file.write("\t"+r"\caption{TABLE}"+"\n")
-        file.write("\t"+r"\label{tab:NAME}"+"\n")
-        if(useSIUnitX):
-            file.write("\t"+r"\sisetup{table-format=X.")
-            if(precision != None):
-                file.write(str(int(precision)))
-            else:
-                file.write("X")
-            file.write("}\n")
-
-        file.write("\t"+r"\begin{tabular}{")
-        if useSIUnitX:
-            for i in table[:-1]:
-                file.write("S ")
-            file.write("S")
-        else:
-            for i in table[:-1]:
-                file.write("c ")
-            file.write("c")
-        file.write("}\n")
-
-        if standardRules:
-            if makeHeader:
-                file.write("\t\t")
-            file.write(r"\toprule"+"\n")
-
-    def __parse_tex_word__(word, end=False):
-        newWord = ""
-        if isinstance(word, numbers.Number) or isinstance(word, UFloat):
-            if precision != None:
-                newWord = ("{:."+str(int(precision))+"f}").format(word)
-            else:
-                newWord = str(word)
-        else:
-            newWord = str(word)
-            if(useSIUnitX):
-                newWord = "{"+newWord+"}"
-
-        if makeHeader:
-            file.write("\t\t")
-
-        file.write(newWord+(max_len - len(newWord))*" ")
-
-        if not end:
-            file.write(" & ")
-
-    for l in range(len(t_table)):
-
-        if standardRules and l == 1:
-            if makeHeader:
-                file.write("\t\t")
-            file.write(r"\midrule"+"\n")
-
-        for w in t_table[l][:-1]:
-            __parse_tex_word__(w)
-
-        __parse_tex_word__(t_table[l][-1], end=True)
-        file.write(r"  \\"+"\n")
-
-    if standardRules:
-        if makeHeader:
-            file.write("\t\t")
-        file.write(r"\bottomrule"+"\n")
-
-    if makeHeader:
-        file.write("\t"+r"\end{tabular}"+"\n")
-        file.write(r"\end{table}")
-
-    file.close()
+    # Add multicol stuff
+    if column_meta[column_index].HAS_UFloats:
+        return r"\multicolumn{2}{c}{"+str(cell)+r"}"
+    return r"{"+str(cell)+r"}"
