@@ -228,10 +228,10 @@ def __parse_word__(word):
 def mean_values(table):
     """Returns the mean values and errors of the given tables as ufloats."""
 
-    _raw_dict = raw_dict(table)
+    _raw_dict = raw_data(table)
     mean_values = []
-    for v in _raw_dict.items():
-        mean_values.append(np.mean(ufloat(np.mean(v[1]), np.std(v[1]))))
+    for v in _raw_dict:
+        mean_values.append(ufloat(np.mean(v), np.std(v)/np.sqrt(len(v))))
 
     return mean_values
 
@@ -301,9 +301,9 @@ def raw_data(table):
 
 def gen_tex_table(
         table, filename,
-        tex_caption, tex_label,
-        subtables, precision,
-        midrule):
+        tex_caption="", tex_label="",
+        subtables=None, precision="",
+        midrule=2):
     """Generates a .tex file containing only a table.
     The whole file does not have to be modified anymore,
     it can be directly included with \\input{}.
@@ -436,10 +436,13 @@ def __write_tabular__(file, str_table, column_meta, midrule, level=1, fillTo=Non
             file.write(r"\midrule"+"\n")
     if fillTo is not None and fillTo > len(str_table):
         for i in range(fillTo - len(str_table)):
+            for i in range(level):
+                file.write("\t")
+            file.write("\t")
             for col_index, cell in enumerate(str_table[-1][:-1]):
-                file.write(r"\phantom{"+__tex_cell__(cell, column_meta[col_index].MAX_LEN)+"}")
+                file.write(r"\phantom{"+__tex_cell__(cell, column_meta[col_index].MAX_LEN).strip()+"}")
                 file.write(" & ")
-            file.write(r"\phantom{"+__tex_cell__(row[-1], column_meta[-1].MAX_LEN)+"}")
+            file.write(r"\phantom{"+__tex_cell__(row[-1], column_meta[-1].MAX_LEN).strip()+"}")
             file.write(r"\\"+"\n")
 
     for i in range(level):
@@ -515,6 +518,9 @@ def __tex_format__(cell, column_meta, column_index):
             cell_ufloat = "{:u}".format(cell).split("+/-")
 
         return cell_ufloat[0]+" & "+cell_ufloat[1]
+    # cell is Null
+    if not cell:
+        return "{}"
 
     # No known rules (Maybe it is a string)
     # Add multicol stuff
