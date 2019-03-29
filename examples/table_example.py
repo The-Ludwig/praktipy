@@ -21,5 +21,5 @@ th.gen_tex_table(
         # the format of the numbers per column
         # in SiUnitX style 
         precision=["2.3", 3, "1.9"], 
-        # Where to put the midrule. This also defines the header columns
+        # Where to put the midrule. This also defines the header rows
         midrule=2)
