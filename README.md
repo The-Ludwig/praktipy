@@ -3,6 +3,25 @@ praktipy
 These python files will make your life easier when handling with human readable
 tables in the physik-praktikum at TU-Dortmund(, hopefully).
 
+# Table of Contents
+- [praktipy](#praktipy)
+- [Table of Contents](#table-of-contents)
+- [Needed software](#needed-software)
+- [Installation](#installation)
+- [or without make:](#or-without-make)
+  - ["But I don't want to install the whole thing"](#%22but-i-dont-want-to-install-the-whole-thing%22)
+- [Handling tables](#handling-tables)
+  - [Generating tables out of text files](#generating-tables-out-of-text-files)
+- [Look what the parser has parsed](#look-what-the-parser-has-parsed)
+  - [Generating tex tables](#generating-tex-tables)
+- [It is that quick.](#it-is-that-quick)
+  - [Manipulating the table.](#manipulating-the-table)
+- [Using Matplotlib](#using-matplotlib)
+- [Wildcard imports](#wildcard-imports)
+- [Documentation](#documentation)
+- [Old versions](#old-versions)
+- [Thanks](#thanks)
+
 # Needed software
 * python 3
 * some python 3 packages, which will be installed by the install script
