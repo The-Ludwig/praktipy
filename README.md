@@ -4,6 +4,7 @@ These python files will make your life easier when handling with human readable
 tables in the physik-praktikum at TU-Dortmund(, hopefully).
 
 # Table of Contents
+
 - [praktipy](#praktipy)
 - [Table of Contents](#table-of-contents)
 - [Needed software](#needed-software)
@@ -49,7 +50,7 @@ If you just downloaded the file
 import tablehandler as th
 ~~~
 ## Generating tables out of text files
-Praktipy uses 2-dimensional standart python-lists, to represent its lists.
+Praktipy uses 2-dimensional standard python-lists, to represent its lists.
 It can generate them out of a human readable text file (th.gen_from_txt). That seems very similar to numpy.genfromtxt, but although it is way more inefficient, it much more powerful. 
 I can't recommend it to parse very large files (use numpy.genfromtxt for that), but every human readable table should be fine.
 

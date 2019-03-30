@@ -5,8 +5,10 @@ import math
 import numpy as np
 from uncertainties import ufloat, UFloat
 from math import log10
+from numba import jit
 
 
+@jit
 def gen_from_txt(filename, explicit_none=False):
     """Generates a multi-datatype table (A python list of python lists,
     which contains strings, floats and None).
@@ -36,6 +38,7 @@ def gen_from_txt(filename, explicit_none=False):
         return _gen_from_txt_explicit(filename)
     else:
         return _gen_from_txt_visual(filename)
+
 
 
 def _gen_from_txt_visual(filename):
@@ -91,7 +94,7 @@ def _gen_from_txt_visual(filename):
             found_last = False
             for i in range(len(column_lengths)-1):
 
-                if(len(line) <= column_lengths[i+1]):
+                if len(line) <= column_lengths[i+1]:
                     new_word = __parse_word__(line[column_lengths[i]:])
                     table[i].append(new_word)
                     found_last = True
@@ -111,6 +114,7 @@ def _gen_from_txt_visual(filename):
         file.close()
 
     return table
+
 
 
 def _gen_from_txt_explicit(filename):
@@ -189,6 +193,7 @@ def _gen_from_txt_explicit(filename):
     return table
 
 
+@jit
 def __add_word__(word, table, column):
     if len(table) < column + 1:
         table.append([word])
@@ -211,7 +216,7 @@ def __parse_word__(word):
 
     # parse uncertainty value
     uncertainty_rep = word.split("+-")
-    if(len(uncertainty_rep) == 2):
+    if len(uncertainty_rep) == 2:
         try:
             ret = ufloat(float(uncertainty_rep[0]), float(uncertainty_rep[1]))
             return ret
@@ -225,6 +230,7 @@ def __parse_word__(word):
         return word
 
 
+@jit
 def mean_values(table):
     """Returns the mean values and errors of the given tables as ufloats."""
 
@@ -236,6 +242,7 @@ def mean_values(table):
     return mean_values
 
 
+@jit
 def mean_values_dict(table):
     """Returns the mean values and errors of the given tables as ufloats."""
 
@@ -247,6 +254,7 @@ def mean_values_dict(table):
     return mean_values
 
 
+@jit
 def dict_from_table(table):
     """Retuns a dictionary mapping the first line to its columns"""
     dict_ret = {}
@@ -255,6 +263,7 @@ def dict_from_table(table):
     return dict_ret
 
 
+@jit
 def raw_dict(table):
     """Returns a dictionary mapping the first line to its non-string collumn values"""
     dictRet = {}
@@ -268,6 +277,7 @@ def raw_dict(table):
     return dictRet
 
 
+@jit
 def transposed(table):
     """Returns the transposition of the table."""
     if table == None:
@@ -278,13 +288,14 @@ def transposed(table):
         while len(i) > len(t_table):
             t_table.append([])
 
-    for collumn in table:
-        for i in range(len(collumn)):
-            t_table[i].append(collumn[i])
+    for column in table:
+        for i in range(len(column)):
+            t_table[i].append(column[i])
 
     return t_table
 
 
+@jit
 def raw_data(table):
     """Returns numbers only"""
 
@@ -406,13 +417,14 @@ def gen_tex_table(
             __write_tabular__(file, header+table[rows_per_subtable*(subtables-1):]
                                 , column_meta, midrule, level=2, fillTo=midrule+rows_per_subtable)
             file.write("\t"+r"\end{subtable}"+"\n")
-                
+
         else:
             __write_tabular__(file, str_table, column_meta, midrule)
-        
+
         file.write(r"\end{table}")
         file.close()
 
+@jit
 def __write_tabular__(file, str_table, column_meta, midrule, level=1, fillTo=None):
     for i in range(level):
         file.write("\t")
@@ -458,6 +470,8 @@ class __ColumnMeta:
     MAX_MAGNITUDE = 1
     precision = None
 
+
+@jit
 def __si_table_header__(column_meta):
     ret = ""
     for col in column_meta:
@@ -473,6 +487,8 @@ def __si_table_header__(column_meta):
                 ret += r"S[table-format="+ str(col.MAX_MAGNITUDE)+"."+str(col.precision) +r"] "
     return ret
 
+
+@jit
 def __tex_cell__(cell, max_len_column):
     remaining_spaces = max_len_column - len(cell)
     while remaining_spaces > 0:
@@ -480,6 +496,8 @@ def __tex_cell__(cell, max_len_column):
         remaining_spaces -= 1
     return cell
 
+
+@jit
 def __tex_format__(cell, column_meta, column_index):
 
     formatter = column_meta[column_index].precision
@@ -500,7 +518,7 @@ def __tex_format__(cell, column_meta, column_index):
 
         elif isinstance(formatter, str):
             formatter = "{:"+formatter+"f}"
-        
+
         if column_meta[column_index].HAS_UFloats:
             warnings.warn("You have normal numbers in a column where one or more UFloats exist. That can lead to ugly tables.")
             formatter += "&0"
