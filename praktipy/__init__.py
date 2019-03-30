@@ -22,7 +22,7 @@ unit = UnitRegistry()
 noms = unp.nominal_values
 stds = unp.std_devs
 
-# standart import useful (SI) units
+# standard import useful (SI) units
 meter = unit.meter
 seconds = unit.seconds
 kilogram = unit.kilogram

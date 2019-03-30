@@ -1,0 +1,15 @@
+# LaTex support
+text.usetex               : True
+pgf.texsystem             : lualatex
+font.family               : serif
+pgf.preamble              : \input{header-matplotlib.tex}
+
+# Custom decimal separator (based on locale)
+axes.formatter.use_locale : True
+
+# Optional style for nicer plots :)
+
+legend.fontsize           : 16
+legend.numpoints          : 1
+legend.handlelength       : 1.5
+legend.frameon            : False
