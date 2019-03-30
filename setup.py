@@ -12,7 +12,7 @@ from setuptools import find_packages, setup, Command
 NAME = 'praktipy'
 DESCRIPTION = 'A little python package to help with the AP in physics at the TU-Dortmund.'
 URL = 'https://github.com/The-Ludwig/praktipy'
-AUTHOR = 'Ludwig Neste <The-Ludwig>, Max Uetrecht'
+AUTHOR = 'Ludwig Neste <The-Ludwig>, Max Uetrecht <phenomax>'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
@@ -58,7 +58,17 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy'
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'Natural Language :: English',
+        'Natural Language :: German',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: Unix',
+        'Topic :: Scientific/Engineering :: Physics',
+        'Topic :: Scientific/Engineering :: Visualization'
     ],
 )
