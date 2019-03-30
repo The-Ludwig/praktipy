@@ -1,9 +1,9 @@
 
 # praktipy
 
-Praktipy was originally designed as a smalltoolbox for the [TU-Dortmund](https://www.tu-dortmund.de/) physics laboratory course.
+Praktipy was originally designed as a small toolbox for the [TU Dortmund](https://www.tu-dortmund.de/) physics laboratory course.
 
-It contains tools for [LaTeX table generation]((#handling-tables)) from [text files](examples/example_table_visual.txt)
+It contains tools for [LaTeX table generation](#handling-tables) from [text files](https://github.com/The-Ludwig/praktipy/blob/master/examples/example_table_visual.txt)
 and [matplotlib](https://matplotlib.org/) functions to generate fitting curve plots.
 These python files will make your life easier when handling with human readable
 tables in the physik-praktikum at TU-Dortmund (, hopefully).
@@ -44,8 +44,8 @@ $ python3 setup.py install
 If you don't want to install the whole package on your computer, you can just download the relevant files directly:
 
 - Table handling:
-   [praktipy/tablehandler.py](praktipy/tablehandler.py). Just put the file into your currently used directory and import it with "import tablehandler as th"
-- Plots: Use [praktiplot.py](praktipy/praktiplot.py) in a similar way.
+   [praktipy/tablehandler.py](https://github.com/The-Ludwig/praktipy/blob/master/praktipy/tablehandler.py). Just put the file into your currently used directory and import it with "import tablehandler as th"
+- Plots: Use [praktiplot.py](https://github.com/The-Ludwig/praktipy/blob/master/praktipy/praktiplot.py) in a similar way.
 
 # Handling tables
 
@@ -65,7 +65,7 @@ import tablehandler as th
 
 Praktipy uses 2-dimensional standard python-lists, to represent its lists.
 It can generate them out of a human readable text file (th.gen_from_txt). That seems very similar to numpy.genfromtxt, but although it is way more inefficient, it much more powerful.
-I can't recommend it to parse very large files (use numpy.genfromtxt for that), but every human readable table should be fine. (See [benchmark](examples/benchmark.ipynb) notebook for details)
+I can't recommend it to parse very large files (use numpy.genfromtxt for that), but every human readable table should be fine. (See [benchmark](https://github.com/The-Ludwig/praktipy/blob/master/examples/benchmark.ipynb) notebook for details)
 
 Why gen_from_txt is useful:
 
@@ -107,7 +107,7 @@ th.gen_tex_table(
     )
 ```
 
-More detailed information in the source code docstrings and the [examples](examples/) directory.
+More detailed information in the source code docstrings and the [examples](https://github.com/The-Ludwig/praktipy/blob/master/examples/) directory.
 
 # Manipulating the table
 
@@ -138,7 +138,7 @@ That will import everything you will probably need for the internship.
 # Documentation
 
 The code currently is not very well documented (Allthough tablehandler.py itself provides nice Docstrings).
-You will find some examples in the [examples](examples/) directory.
+You will find some examples in the [examples](https://github.com/The-Ludwig/praktipy/blob/master/examples/) directory.
 
 # Old versions
 

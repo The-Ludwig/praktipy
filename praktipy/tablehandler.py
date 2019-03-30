@@ -8,7 +8,6 @@ from math import log10
 from numba import jit
 
 
-
 def gen_from_txt(filename, explicit_none=False):
     """Generates a multi-datatype table (A python list of python lists,
     which contains strings, floats and None).
@@ -38,7 +37,6 @@ def gen_from_txt(filename, explicit_none=False):
         return _gen_from_txt_explicit(filename)
     else:
         return _gen_from_txt_visual(filename)
-
 
 
 def _gen_from_txt_visual(filename):
@@ -116,7 +114,6 @@ def _gen_from_txt_visual(filename):
     return table
 
 
-
 def _gen_from_txt_explicit(filename):
     # Can you see my c++-heritage?
     class StateEnum:
@@ -162,7 +159,7 @@ def _gen_from_txt_explicit(filename):
                         column += 1
                         new_word = ""
                         break
-                    elif(char == '"'):
+                    elif char == '"':
                         new_word += char
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
@@ -171,12 +168,12 @@ def _gen_from_txt_explicit(filename):
                     else:
                         new_word += char
                 elif state == StateEnum.IN_WORD:
-                    if(char == " "):
+                    if char == " ":
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
                         new_word = ""
                         state = StateEnum.IN_BETWEEN
-                    elif(char == "\n" or char == "\f" or char == "\0"):
+                    elif char == "\n" or char == "\f" or char == "\0":
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
                         new_word = ""
@@ -191,7 +188,6 @@ def _gen_from_txt_explicit(filename):
 
         file.close()
     return table
-
 
 
 def __add_word__(word, table, column):
@@ -230,7 +226,6 @@ def __parse_word__(word):
         return word
 
 
-
 def mean_values(table):
     """Returns the mean values and errors of the given tables as ufloats."""
 
@@ -240,7 +235,6 @@ def mean_values(table):
         mean_values.append(ufloat(np.mean(v), np.std(v)/np.sqrt(len(v))))
 
     return mean_values
-
 
 
 def mean_values_dict(table):
@@ -254,14 +248,12 @@ def mean_values_dict(table):
     return mean_values
 
 
-
 def dict_from_table(table):
     """Retuns a dictionary mapping the first line to its columns"""
     dict_ret = {}
     for _c in table:
         dict_ret[_c[0]] = _c[1:]
     return dict_ret
-
 
 
 def raw_dict(table):
@@ -275,7 +267,6 @@ def raw_dict(table):
                 dictRet[c[0]].append(j)
 
     return dictRet
-
 
 
 def transposed(table):
@@ -293,7 +284,6 @@ def transposed(table):
             t_table[i].append(column[i])
 
     return t_table
-
 
 
 def raw_data(table):
@@ -318,7 +308,6 @@ def gen_tex_table(
     """Generates a .tex file containing only a table.
     The whole file does not have to be modified anymore,
     it can be directly included with \\input{}.
-
     Uses LaTeX packages (include them!):
     * \\usepackage[
             locale=DE,
@@ -328,7 +317,6 @@ def gen_tex_table(
             %output-decimal-marker=.,
         ]{siunitx}
     * \\susepackage{subcaption}
-
     Uses S
     Parameters
     ----------
@@ -426,7 +414,7 @@ def gen_tex_table(
 
 
 def __write_tabular__(file, str_table, column_meta, midrule, level=1, fillTo=None):
-    for i in range(level):
+    for _ in range(level):
         file.write("\t")
     file.write(r"\begin{tabular}{"+__si_table_header__(column_meta)+"}\n")
     for i in range(level):
@@ -452,9 +440,11 @@ def __write_tabular__(file, str_table, column_meta, midrule, level=1, fillTo=Non
                 file.write("\t")
             file.write("\t")
             for col_index, cell in enumerate(str_table[-1][:-1]):
-                file.write(r"\phantom{"+__tex_cell__(cell, column_meta[col_index].MAX_LEN).strip()+"}")
+                file.write(
+                    r"\phantom{"+__tex_cell__(cell, column_meta[col_index].MAX_LEN).strip()+"}")
                 file.write(" & ")
-            file.write(r"\phantom{"+__tex_cell__(row[-1], column_meta[-1].MAX_LEN).strip()+"}")
+            file.write(
+                r"\phantom{"+__tex_cell__(row[-1], column_meta[-1].MAX_LEN).strip()+"}")
             file.write(r"\\"+"\n")
 
     for i in range(level):
@@ -464,6 +454,7 @@ def __write_tabular__(file, str_table, column_meta, midrule, level=1, fillTo=Non
         file.write("\t")
     file.write(r"\end{tabular}"+"\n")
 
+
 class __ColumnMeta:
     MAX_LEN = 0
     HAS_UFloats = False
@@ -471,22 +462,22 @@ class __ColumnMeta:
     precision = None
 
 
-
 def __si_table_header__(column_meta):
     ret = ""
     for col in column_meta:
         if isinstance(col.precision, str):
-            ret += r"S[table-format="+ col.precision +r"] "
+            ret += r"S[table-format=" + col.precision + r"] "
         else:
-            ret += r"S[table-format="+ str(col.MAX_MAGNITUDE)+"."+str(col.precision) +r"] "
+            ret += r"S[table-format=" + \
+                str(col.MAX_MAGNITUDE)+"."+str(col.precision) + r"] "
         if col.HAS_UFloats:
             ret += r"@{${}\pm{}$} "
             if isinstance(col.precision, str):
-                ret += r"S[table-format="+ col.precision +r"] "
+                ret += r"S[table-format=" + col.precision + r"] "
             else:
-                ret += r"S[table-format="+ str(col.MAX_MAGNITUDE)+"."+str(col.precision) +r"] "
+                ret += r"S[table-format=" + \
+                    str(col.MAX_MAGNITUDE)+"."+str(col.precision) + r"] "
     return ret
-
 
 
 def __tex_cell__(cell, max_len_column):
@@ -497,7 +488,6 @@ def __tex_cell__(cell, max_len_column):
     return cell
 
 
-
 def __tex_format__(cell, column_meta, column_index):
 
     formatter = column_meta[column_index].precision
@@ -506,31 +496,33 @@ def __tex_format__(cell, column_meta, column_index):
     if isinstance(cell, numbers.Number):
         if isinstance(formatter, int):
             if formatter < 0:
-                raise ValueError("Negative precision ("+formatter+") makes no sense.")
+                raise ValueError(
+                    "Negative precision ("+formatter+") makes no sense.")
             formatter = "{:."+str(formatter)+"f}"
 
         elif isinstance(formatter, float):
             if formatter < 0:
-                raise ValueError("Negative precision ("+formatter+") makes no sense.")
+                raise ValueError(
+                    "Negative precision ("+formatter+") makes no sense.")
             formatter = ("{:" + str(int(formatter)) + "."
                          + str(int(round((formatter - int(formatter))*10))) + "f}"
-                        )
+                         )
 
         elif isinstance(formatter, str):
             formatter = "{:"+formatter+"f}"
 
         if column_meta[column_index].HAS_UFloats:
-            warnings.warn("You have normal numbers in a column where one or more UFloats exist. That can lead to ugly tables.")
+            warnings.warn(
+                "You have normal numbers in a column where one or more UFloats exist. That can lead to ugly tables.")
             formatter += "&0"
 
         assert isinstance(formatter, str)
 
         return formatter.format(cell)
 
-
     if isinstance(cell, UFloat):
         if isinstance(formatter, str):
-            cell_ufloat =  ("{:"+formatter+"u}").format(cell).split("+/-")
+            cell_ufloat = ("{:"+formatter+"u}").format(cell).split("+/-")
         else:
             # Let uncertainty handle the precision
             cell_ufloat = "{:u}".format(cell).split("+/-")
