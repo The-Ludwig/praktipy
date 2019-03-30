@@ -1,6 +1,8 @@
-prakitpy
-====
-This provides a little script to handle tables in textfiles (similar, but more powerful, to numpy.genfromtxt()).
+# prakitpy
+
+This provides a little script to handle tables in textfiles (similar, but more powerful, to numpy.genfromtxt()).  
+
+**Note:** This is the legacy version. Please see the [releases](https://github.com/The-Ludwig/praktipy/releases) branch for the most recent release!
 
 # Using Matplotlib
 
@@ -30,4 +32,5 @@ $ python setup.py install
 The setup script will download and install all needed dependencies.
 
 # Thanks
+
 Thanks a lot to [PEP et al.](https://pep-dortmund.org/) for their [Toolbox-Workshop](https://toolbox.pep-dortmund.org/notes.html) and materials they provide. I basicly stole their matplotlib-tex-header!
