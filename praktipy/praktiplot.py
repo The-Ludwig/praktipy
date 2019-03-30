@@ -14,7 +14,7 @@ matplotlib.use('pgf')
 
 locale_strings = {
     'Darwin': 'de_DE',
-    'Windows': 'de-de',
+    'Windows': 'de_de',
     'Linux': 'de_DE.UTF8',
 }
 
@@ -23,7 +23,10 @@ try:
 except locale.Error:
     print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
 
-plt.style.use('file://' + os.path.dirname(os.path.abspath(__file__)) + '/praktipy.mplstyle')
+if platform.system() == "Windows":
+    plt.style.use('file:\\' + os.path.dirname(os.path.abspath(__file__)) + os.sep + 'praktipy.mplstyle')
+else:
+    plt.style.use('file://' + os.path.dirname(os.path.abspath(__file__)) + os.sep + 'praktipy.mplstyle')
 
 # convenience functions
 
