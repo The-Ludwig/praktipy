@@ -25,7 +25,7 @@ except locale.Error:
 plt.ticklabel_format(useLocale=True)
 
 # convenience functions
-@jit
+
 def polyplotfit(x, params, N=1000, border=0.05):
     """Plots a polynome, which was fitted.
     x: the original x value which was fitted
@@ -42,7 +42,7 @@ def polyplotfit(x, params, N=1000, border=0.05):
 
     return (x_fit, y_fit)
 
-@jit
+
 def curveplotfit(f, x, params, N=1000, border=0.05, logscale=False):
     """Plots a general function, which was fitted.
     x: the original x value which was fitted

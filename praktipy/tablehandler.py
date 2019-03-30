@@ -8,7 +8,7 @@ from math import log10
 from numba import jit
 
 
-@jit
+
 def gen_from_txt(filename, explicit_none=False):
     """Generates a multi-datatype table (A python list of python lists,
     which contains strings, floats and None).
@@ -193,7 +193,7 @@ def _gen_from_txt_explicit(filename):
     return table
 
 
-@jit
+
 def __add_word__(word, table, column):
     if len(table) < column + 1:
         table.append([word])
@@ -230,7 +230,7 @@ def __parse_word__(word):
         return word
 
 
-@jit
+
 def mean_values(table):
     """Returns the mean values and errors of the given tables as ufloats."""
 
@@ -242,7 +242,7 @@ def mean_values(table):
     return mean_values
 
 
-@jit
+
 def mean_values_dict(table):
     """Returns the mean values and errors of the given tables as ufloats."""
 
@@ -254,7 +254,7 @@ def mean_values_dict(table):
     return mean_values
 
 
-@jit
+
 def dict_from_table(table):
     """Retuns a dictionary mapping the first line to its columns"""
     dict_ret = {}
@@ -263,7 +263,7 @@ def dict_from_table(table):
     return dict_ret
 
 
-@jit
+
 def raw_dict(table):
     """Returns a dictionary mapping the first line to its non-string collumn values"""
     dictRet = {}
@@ -277,7 +277,7 @@ def raw_dict(table):
     return dictRet
 
 
-@jit
+
 def transposed(table):
     """Returns the transposition of the table."""
     if table == None:
@@ -295,7 +295,7 @@ def transposed(table):
     return t_table
 
 
-@jit
+
 def raw_data(table):
     """Returns numbers only"""
 
@@ -309,7 +309,7 @@ def raw_data(table):
                 data[i].append(w)
     return data
 
-@jit
+
 def gen_tex_table(
         table, filename,
         tex_caption="", tex_label="",
@@ -424,7 +424,7 @@ def gen_tex_table(
         file.write(r"\end{table}")
         file.close()
 
-@jit
+
 def __write_tabular__(file, str_table, column_meta, midrule, level=1, fillTo=None):
     for i in range(level):
         file.write("\t")
@@ -471,7 +471,7 @@ class __ColumnMeta:
     precision = None
 
 
-@jit
+
 def __si_table_header__(column_meta):
     ret = ""
     for col in column_meta:
@@ -488,7 +488,7 @@ def __si_table_header__(column_meta):
     return ret
 
 
-@jit
+
 def __tex_cell__(cell, max_len_column):
     remaining_spaces = max_len_column - len(cell)
     while remaining_spaces > 0:
@@ -497,7 +497,7 @@ def __tex_cell__(cell, max_len_column):
     return cell
 
 
-@jit
+
 def __tex_format__(cell, column_meta, column_index):
 
     formatter = column_meta[column_index].precision

@@ -16,7 +16,7 @@ REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 REQUIRED = [
-    'matplotlib', 'uncertainties', 'numpy', 'pint', 'scipy', 'numba'
+    'matplotlib', 'uncertainties', 'numpy', 'pint', 'scipy'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
