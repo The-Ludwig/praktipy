@@ -2,27 +2,29 @@
 
 import locale
 import matplotlib
+import platform
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 from numba import jit
 from os.path import dirname, abspath
 
 matplotlib.use('pgf')
-matplotlib.rcParams.update({
-    'font.family': 'serif',
-    'text.usetex': True,
-    'pgf.rcfonts': False,
-    'pgf.texsystem': 'lualatex',
-    'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header.tex'+r'}',
-})
 
 # use german locale settings for printing 3.5 as 3,5
+
+locale_strings = {
+    'Darwin': 'de_DE',
+    'Windows': 'de-de',
+    'Linux': 'de_DE.UTF8',
+}
+
 try:
-    locale.setlocale(locale.LC_ALL, 'de_DE')
+    locale.setlocale(locale.LC_ALL, locale_strings[platform.system()])
 except locale.Error:
     print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
 
-plt.ticklabel_format(useLocale=True)
+plt.style.use('file://' + os.path.dirname(os.path.abspath(__file__)) + '/praktipy.mplstyle')
 
 # convenience functions
 

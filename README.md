@@ -121,6 +121,8 @@ You can manipulate the table with all the known python list functions. Ontop of 
 
 Praktipy will try to set up the matplotlib backend to enable printing of pretty (german number format and nice math-font) plots. If you want to set up matplotlib yourself, just do that before you import anything from praktipy.
 
+**Important:** Praktipy will set it's [style file](https://github.com/The-Ludwig/praktipy/blob/master/praktipy/praktipy.mplstyle) as default. If you have an existing `matplotlibrc` file, please make sure to merge them together. Apart from the LaTeX support, `axes.formatter.use_locale : True` has to be set, in order to use system locale based decimal separators (e.g. `,` instead of `.` for german)
+
 Praktipy also provides some convenience function,
 for example to generate nice datapoints ontop of a fitted function.
 

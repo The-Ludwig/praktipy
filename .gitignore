@@ -5,6 +5,7 @@ examples/example.tex
 **__pycache__**
 *.py[cod]
 *$py.class
+*.pyc
 
 # C extensions
 *.so
