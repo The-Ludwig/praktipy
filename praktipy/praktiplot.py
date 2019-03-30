@@ -4,6 +4,7 @@ import locale
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+from numba import jit
 from os.path import dirname, abspath
 
 matplotlib.use('pgf')
@@ -15,15 +16,16 @@ matplotlib.rcParams.update({
     'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header.tex'+r'}',
 })
 
-# use german locale settings for printing 3.4 as 3,4
+# use german locale settings for printing 3.5 as 3,5
 try:
-    locale.setlocale(locale.LC_ALL, 'de_DE.UTF8')
+    locale.setlocale(locale.LC_ALL, 'de_DE')
 except locale.Error:
     print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
 
 plt.ticklabel_format(useLocale=True)
 
 # convenience functions
+
 def polyplotfit(x, params, N=1000, border=0.05):
     """Plots a polynome, which was fitted.
     x: the original x value which was fitted
