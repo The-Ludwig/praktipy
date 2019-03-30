@@ -1,27 +1,35 @@
-# Setting matplotlib layout to match tex settings
-
-import locale
-import matplotlib
+# standard imports
+import sys
 import numpy as np
-import matplotlib.pyplot as plt
-from os.path import dirname, abspath
 
-matplotlib.use('pgf')
-matplotlib.rcParams.update({
-    'font.family': 'serif',
-    'text.usetex': True,
-    'pgf.rcfonts': False,
-    'pgf.texsystem': 'lualatex',
-    'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header.tex'+r'}',
-})
+from .tablehandler import TableHandler, genfromtxt
 
-# use german locale settings for printing 3.4 as 3,4
-try:
-    locale.setlocale(locale.LC_ALL, 'de_DE.UTF8')
-except locale.Error:
-    print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
+__all__ = []
 
-plt.ticklabel_format(useLocale=True)
+if "matplotlib" in sys.modules or "matplotlib.pyplot" in sys.modules:
+    print("Praktipy will not set up the matplotlib backend, because it is already set up.")
+else:
+    from .praktiplot import plt, matplotlib, cla
+    __all__ += ["plt", "matplotlib", "cla"]
+
+from scipy.optimize import curve_fit
+from scipy import constants as const
+from pint import UnitRegistry
+from uncertainties import ufloat
+import uncertainties.unumpy as unp
+
+
+unit = UnitRegistry()
+noms = unp.nominal_values
+stds = unp.std_devs
+
+# standart import useful (SI) units
+meter = unit.meter
+seconds = unit.seconds
+kilogram = unit.kilogram
+kelvin = unit.kelvin
+celsius = unit.celsius
+
 
 # convenience functions
 def polyplotfit(x, params, N=1000, border=0.05):
@@ -57,9 +65,9 @@ def curveplotfit(f, x, params, N=1000, border=0.05, logscale=False):
 
     return (x_fit, y_fit)
 
-def cla():
-    """
-    Calls the matplotlib plt.cla, but turns the useLocale option back on.
-    """
-    plt.cla()
-    plt.ticklabel_format(useLocale=True)
+
+units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
+
+__all__ += ["TableHandler", "np", "ufloat", "unp", "unit", "noms",
+            "stds", "const", "polyplotfit", "genfromtxt", "curveplotfit", "curve_fit"]
+__all__ += units

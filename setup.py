@@ -3,24 +3,21 @@
 
 import io
 import os
+import sys
 from shutil import rmtree
 
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'praktipy'
-DESCRIPTION = 'A small toolbox for physics laboratory courses at the TU Dortmund.'
+DESCRIPTION = 'A little python package to help with the AP in physics at the TU-Dortmund.'
 URL = 'https://github.com/The-Ludwig/praktipy'
-AUTHOR = 'Ludwig Neste <The-Ludwig>, Max Uetrecht <phenomax>'
+AUTHOR = 'Ludwig Neste <The-Ludwig>, Max Uetrecht'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = None
 
 REQUIRED = [
     'matplotlib', 'uncertainties', 'numpy', 'pint', 'scipy'
-]
-
-DEV_REQUIRED = [
-    'twine'
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -52,9 +49,6 @@ setup(
     url=URL,
     packages=find_packages(exclude=('tests',)),
     install_requires=REQUIRED,
-    extras_require={
-        'dev': DEV_REQUIRED,
-    },
     include_package_data=True,
     license='MIT',
     classifiers=[
@@ -64,16 +58,7 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'Natural Language :: English',
-        'Natural Language :: German',
-        'Operating System :: OS Independent',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: Unix',
-        'Topic :: Scientific/Engineering :: Physics',
-        'Topic :: Scientific/Engineering :: Visualization',
-        'Topic :: Education'
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy'
     ],
 )

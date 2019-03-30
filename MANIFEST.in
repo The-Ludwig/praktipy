@@ -1,2 +1,2 @@
+include praktipy/legacy/matplotlib_header.tex
 include praktipy/matplotlib_header.tex
-include LICENSE
