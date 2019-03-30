@@ -34,8 +34,11 @@ tables in the physik-praktikum at TU-Dortmund (, hopefully).
 # Installation
 
 ```bash
-$ make install
-# or without make:
+# Via pip (preferred)
+$ pip install praktipy
+
+# or manually
+$ git clone https://github.com/The-Ludwig/praktipy.git
 $ python3 setup.py install
 ```
 
