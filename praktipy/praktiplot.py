@@ -6,7 +6,6 @@ import platform
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from numba import jit
 from os.path import dirname, abspath
 
 matplotlib.use('pgf')

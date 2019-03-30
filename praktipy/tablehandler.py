@@ -5,7 +5,6 @@ import math
 import numpy as np
 from uncertainties import ufloat, UFloat
 from math import log10
-from numba import jit
 
 
 def gen_from_txt(filename, explicit_none=False):
