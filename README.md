@@ -1,6 +1,12 @@
 
 # praktipy
 
+![PyPI](https://img.shields.io/pypi/v/praktipy.svg)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/praktipy.svg)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/praktipy.svg)
+![PyPI - License](https://img.shields.io/pypi/l/praktipy.svg)
+![Requires.io](https://img.shields.io/requires/github/The-Ludwig/praktipy.svg)
+
 Praktipy was originally designed as a small toolbox for the [TU Dortmund](https://www.tu-dortmund.de/) physics laboratory course.
 
 It contains tools for [LaTeX table generation](#handling-tables) from [text files](https://github.com/The-Ludwig/praktipy/blob/master/examples/example_table_visual.txt)
