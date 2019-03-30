@@ -1,6 +1,6 @@
 # prakitpy
 
-This provides a little script to handle tables in textfiles (similar, but more powerful, to numpy.genfromtxt()).  
+This provides a little script to handle tables in textfiles (similar, but more powerful, to numpy.genfromtxt()).
 
 **Note:** This is the legacy version. Please see the [releases](https://github.com/The-Ludwig/praktipy/releases) branch for the most recent release!
 
@@ -14,20 +14,21 @@ The code currently is not very well documented (Allthough tablehandler.py itself
 You will find some examples in ./examples/, which you can use for orientation.
 
 # Dependencies
-* python 3
-* numpy
-* uncertainties
-* pint
+
+- python 3
+- numpy
+- uncertainties
+- pint
 
 # Installation
 
-~~~sh
+```sh
 $ python3 setup.py install
 
 # If python 3 is installed only
 
 $ python setup.py install
-~~~
+```
 
 The setup script will download and install all needed dependencies.
 
