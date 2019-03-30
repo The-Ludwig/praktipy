@@ -4,4 +4,4 @@ install:
 	python3 setup.py install
 
 test:
-	python -m unittest discover
+	python3 -m unittest discover

@@ -309,7 +309,7 @@ def raw_data(table):
                 data[i].append(w)
     return data
 
-
+@jit
 def gen_tex_table(
         table, filename,
         tex_caption="", tex_label="",
