@@ -5,7 +5,6 @@ import matplotlib
 import platform
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 from os.path import dirname, abspath
 
 matplotlib.use('pgf')
@@ -23,11 +22,22 @@ try:
 except locale.Error:
     print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
 
-if platform.system() == "Windows":
-    plt.style.use('file:\\' + os.path.dirname(os.path.abspath(__file__)) + os.sep + 'praktipy.mplstyle')
-else:
-    plt.style.use('file://' + os.path.dirname(os.path.abspath(__file__)) + os.sep + 'praktipy.mplstyle')
+matplotlib.rcParams.update({
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+    'pgf.texsystem': 'lualatex',
+    'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header.tex'+r'}',
+    'axes.formatter.use_locale' : True,
+})
 
+# Currently not working
+# if platform.system() == "Windows":
+#     plt.style.use('file:\\' + os.path.dirname(os.path.abspath(__file__)) + os.sep + 'praktipy.mplstyle')
+# else:
+#     plt.style.use('file://' + os.path.dirname(os.path.abspath(__file__)) + os.sep + 'praktipy.mplstyle')
+
+# print('file://' + os.path.dirname(os.path.abspath(__file__)) + os.sep + 'praktipy.mplstyle')
 # convenience functions
 
 def polyplotfit(x, params, N=1000, border=0.05):

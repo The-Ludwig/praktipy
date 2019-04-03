@@ -152,12 +152,20 @@ The code currently is not very well documented (Allthough tablehandler.py itself
 You will find some examples in the [examples](https://github.com/The-Ludwig/praktipy/blob/master/examples/) directory.
 
 # Old versions
+If you have already written some code with an old version of praktipy (before 2.0), it is very 
+likely that that won't work with the new versions.
 
-To access legacy versions (before v2.0) just install the latest v1.x release through pip
+I redid the whole code style of praktipy to be a bit more pythonic.
 
-```bash
-pip install praktipy==1.1
-```
+But fear not! There is an easy trick to access old version of praktipy fro within the new version. Whenever you have written something with praktipy, like
+~~~python
+from praktipy import *
+~~~ 
+just substitute *praktipy* with *praktipy.legacy* like that
+~~~python
+from praktipy.legacy import *
+~~~
+and your code will work without problems.
 
 # Thanks
 

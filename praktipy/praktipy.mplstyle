@@ -2,7 +2,7 @@
 text.usetex               : True
 pgf.texsystem             : lualatex
 font.family               : serif
-pgf.preamble              : \input{header-matplotlib.tex}
+pgf.preamble              : \input{matplotlib_header.tex}
 
 # Custom decimal separator (based on locale)
 axes.formatter.use_locale : True
