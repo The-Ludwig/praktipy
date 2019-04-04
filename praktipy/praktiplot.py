@@ -7,29 +7,48 @@ import numpy as np
 import matplotlib.pyplot as plt
 from os.path import dirname, abspath
 
-matplotlib.use('pgf')
-
 # use german locale settings for printing 3.5 as 3,5
-
 locale_strings = {
     'Darwin': 'de_DE',
     'Windows': 'de_de',
     'Linux': 'de_DE.UTF8',
 }
+matplotlib.use('pgf')
 
-try:
-    locale.setlocale(locale.LC_ALL, locale_strings[platform.system()])
-except locale.Error:
-    print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
 
-matplotlib.rcParams.update({
-    'font.family': 'serif',
-    'text.usetex': True,
-    'pgf.rcfonts': False,
-    'pgf.texsystem': 'lualatex',
-    'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header.tex'+r'}',
-    'axes.formatter.use_locale' : True,
-})
+def auto_set_backend():
+    import sys
+    if "release" in sys.argv:
+        print("Setting up Matplotlib to the slow, but pretty backend.")
+        pretty()
+    else:
+        print("Setting up Matplotlib to the fast backend.")
+        fast()
+
+def fast():
+    matplotlib.rcParams.update({
+        'font.family': 'serif',
+        'text.usetex': True,
+        'pgf.rcfonts': False,
+        'pgf.texsystem': 'pdflatex',
+        'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header_minimal.tex'+r'}'
+    })
+
+
+def pretty():  
+    try:
+        locale.setlocale(locale.LC_ALL, locale_strings[platform.system()])
+    except locale.Error:
+        print("Could not set the language settings! 3.5 will not be written as 3,5! SO SAD!")
+
+    matplotlib.rcParams.update({
+        'font.family': 'serif',
+        'text.usetex': True,
+        'pgf.rcfonts': False,
+        'pgf.texsystem': 'lualatex',
+        'pgf.preamble': r'\input{'+dirname(abspath(__file__)).replace(" ", r"\ ")+r'//matplotlib_header.tex'+r'}',
+        'axes.formatter.use_locale' : True,
+    })
 
 # Currently not working
 # if platform.system() == "Windows":
