@@ -2,6 +2,10 @@
 
 Most recent releases are shown at the top.
 
+## 2.1.3
+- use fast matplotlib settings as default
+- set matplotlib backend before importing pyplot
+
 ## 2.1.2
 - added the fast backend function
 

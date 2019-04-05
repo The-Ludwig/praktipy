@@ -2,6 +2,9 @@
 
 import locale
 import matplotlib
+
+matplotlib.use('pgf')
+
 import platform
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,8 +16,9 @@ locale_strings = {
     'Windows': 'de_de',
     'Linux': 'de_DE.UTF8',
 }
-matplotlib.use('pgf')
 
+## Use fast settings as default
+fast()
 
 def auto_set_backend():
     import sys
