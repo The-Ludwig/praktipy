@@ -17,9 +17,6 @@ locale_strings = {
     'Linux': 'de_DE.UTF8',
 }
 
-## Use fast settings as default
-fast()
-
 def auto_set_backend():
     import sys
     if "release" in sys.argv:
@@ -102,3 +99,6 @@ def cla():
     """
     plt.cla()
     plt.ticklabel_format(useLocale=True)
+
+## Use fast settings as default
+fast()
