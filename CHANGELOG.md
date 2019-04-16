@@ -2,6 +2,9 @@
 
 Most recent releases are shown at the top.
 
+## 2.1.5
+- adjustet the minimal matplotlib header, to simulate some features, which are only available in the LuaLaTeX backend
+
 ## 2.1.3 / 2.1.4
 - use fast matplotlib settings as default
 - set matplotlib backend before importing pyplot
