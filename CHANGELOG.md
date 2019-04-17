@@ -2,6 +2,10 @@
 
 Most recent releases are shown at the top.
 
+## 2.1.6
+- saner wildcard imports
+- linregression from scipy.stats as wildcard import
+
 ## 2.1.5
 - adjustet the minimal matplotlib header, to simulate some features, which are only available in the LuaLaTeX backend
 

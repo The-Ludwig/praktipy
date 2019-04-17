@@ -13,24 +13,15 @@ else:
     __all__ += ["plt", "matplotlib", "pplt"]
 
 from scipy.optimize import curve_fit
+from scipy.stats import linregress
 from scipy import constants as const
-from pint import UnitRegistry
+import pint
 from uncertainties import ufloat
 import uncertainties.unumpy as unp
 
-unit = UnitRegistry()
+units = pint.UnitRegistry()
 noms = unp.nominal_values
 stds = unp.std_devs
 
-# standard import useful (SI) units
-meter = unit.meter
-seconds = unit.seconds
-kilogram = unit.kilogram
-kelvin = unit.kelvin
-celsius = unit.celsius
-
-units = ["meter", "seconds", "kilogram", "kelvin", "celsius"]
-
-__all__ += ["th", "np", "ufloat", "unp", "unit", "noms",
-            "stds", "const", "curve_fit"]
-__all__ += units
+__all__ += ["th", "np", "ufloat", "unp", "units", "noms",
+            "stds", "const", "curve_fit", "linregress"]
