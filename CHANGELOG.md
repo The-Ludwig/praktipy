@@ -2,6 +2,9 @@
 
 Most recent releases are shown at the top.
 
+## 2.1.7
+- advanced formatting options
+
 ## 2.1.6
 - saner wildcard imports
 - linregression from scipy.stats as wildcard import

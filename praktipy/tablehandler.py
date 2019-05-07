@@ -508,7 +508,10 @@ def __tex_format__(cell, column_meta, column_index):
                          )
 
         elif isinstance(formatter, str):
-            formatter = "{:"+formatter+"f}"
+            if(formatter.find(":") == -1):
+                formatter = "{:"+formatter+"f}"
+            else:
+                formatter = "{"+formatter+"}"
 
         if column_meta[column_index].HAS_UFloats:
             warnings.warn(
@@ -521,7 +524,10 @@ def __tex_format__(cell, column_meta, column_index):
 
     if isinstance(cell, UFloat):
         if isinstance(formatter, str):
-            cell_ufloat = ("{:"+formatter+"u}").format(cell).split("+/-")
+            if(formatter.find(":") == -1):
+                cell_ufloat = ("{:"+formatter+"u}").format(cell).split("+/-")
+            else:
+                cell_ufloat = ("{"+formatter+"}").format(cell).split("+/-")                
         else:
             # Let uncertainty handle the precision
             cell_ufloat = "{:u}".format(cell).split("+/-")
