@@ -464,20 +464,26 @@ class __ColumnMeta:
 def __si_table_header__(column_meta):
     ret = ""
     for col in column_meta:
-        if isinstance(col.precision, str):
+        if isinstance(col.precision, str) and col.precision.find(":") == -1:
             ret += r"S[table-format=" + col.precision + r"] "
+        elif isinstance(col.precision, str):
+            ret += r"S[table-format=" + \
+            str(col.MAX_MAGNITUDE)+"."+ "0" + r"] "
         else:
             ret += r"S[table-format=" + \
                 str(col.MAX_MAGNITUDE)+"."+str(col.precision) + r"] "
         if col.HAS_UFloats:
             ret += r"@{${}\pm{}$} "
-            if isinstance(col.precision, str):
+            if isinstance(col.precision, str) and col.precision.find(":"):
                 ret += r"S[table-format=" + col.precision + r"] "
+            elif isinstance(col.precision, str):
+                ret += r"S[table-format=" + \
+                str(col.MAX_MAGNITUDE)+"."+ "0" + r"] "
             else:
                 ret += r"S[table-format=" + \
                     str(col.MAX_MAGNITUDE)+"."+str(col.precision) + r"] "
     return ret
-
+  
 
 def __tex_cell__(cell, max_len_column):
     remaining_spaces = max_len_column - len(cell)
