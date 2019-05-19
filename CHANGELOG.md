@@ -2,6 +2,9 @@
 
 Most recent releases are shown at the top.
 
+## 2.1.8
+- added support for tabs in explicit table generation
+
 ## 2.1.7
 - advanced formatting options
 

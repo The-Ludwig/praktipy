@@ -7,6 +7,13 @@ from uncertainties import ufloat, UFloat
 from math import log10
 
 
+# Define what chars do
+SEP_CHARS = (" ", "\t")
+END_CHARS = ("\n", "\f", "\0")
+QUOTE_CHARS = ('"')
+COMMENT_CHARS = ("#")
+
+
 def gen_from_txt(filename, explicit_none=False):
     """Generates a multi-datatype table (A python list of python lists,
     which contains strings, floats and None).
@@ -64,25 +71,25 @@ def _gen_from_txt_visual(filename):
                 in_quotes = False
 
                 for i in range(len(line)):
-                    if line[i] == '#' or line[i] == "\n" or line[i] == "\f":
+                    if line[i] in COMMENT_CHARS or line[i] in END_CHARS:
                         break
 
                     if not found_first_arg:
-                        if line[i] != " ":
+                        if line[i] in SEP_CHARS:
                             found_first_arg = True
                             in_arg = True
-                            if line[i] == '"':
+                            if line[i] in QUOTE_CHARS:
                                 in_quotes = True
                     elif in_quotes:
-                        if line[i] == '"':
+                        if line[i] in QUOTE_CHARS:
                             in_quotes = False
                             in_arg = False
-                    elif not in_arg and line[i] != " ":
+                    elif not in_arg and line[i] not in QUOTE_CHARS:
                         column_lengths.append(i)
                         in_arg = True
-                        if line[i] == '"':
+                        if line[i] in QUOTE_CHARS:
                             in_quotes = True
-                    elif in_arg and line[i] == " ":
+                    elif in_arg and line[i] in QUOTE_CHARS:
                         in_arg = False
 
                 for i in column_lengths:
@@ -137,28 +144,28 @@ def _gen_from_txt_explicit(filename):
 
             new_word = ""
             state = StateEnum.IN_BETWEEN
-
+            
             for char in line:
                 if state == StateEnum.IN_BETWEEN:
-                    if char == " ":
+                    if char in SEP_CHARS:
                         pass
-                    elif char == "\n" or char == "\f" or char == "\0":
+                    elif char in END_CHARS:
                         break
-                    elif char == '"':
+                    elif char in QUOTE_CHARS:
                         state = StateEnum.IN_QUOTES
                         new_word += char
                     else:
                         new_word += char
                         state = StateEnum.IN_WORD
                 elif state == StateEnum.IN_QUOTES:
-                    if char == " ":
+                    if char in SEP_CHARS:
                         new_word += char
-                    elif char == "\n" or char == "\f" or char == "\0":
+                    elif char in END_CHARS:
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
                         new_word = ""
                         break
-                    elif char == '"':
+                    elif char in QUOTE_CHARS:
                         new_word += char
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
@@ -167,17 +174,17 @@ def _gen_from_txt_explicit(filename):
                     else:
                         new_word += char
                 elif state == StateEnum.IN_WORD:
-                    if char == " ":
+                    if char in SEP_CHARS:
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
                         new_word = ""
                         state = StateEnum.IN_BETWEEN
-                    elif char == "\n" or char == "\f" or char == "\0":
+                    elif char in END_CHARS:
                         __add_word__(__parse_word__(new_word), table, column)
                         column += 1
                         new_word = ""
                         break
-                    elif char == '"':
+                    elif char in QUOTE_CHARS:
                         new_word += char
                     else:
                         new_word += char
