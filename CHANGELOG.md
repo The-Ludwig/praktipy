@@ -2,6 +2,9 @@
 
 Most recent releases are shown at the top.
 
+## 2.1.10
+- bug fix in gen_from_txt(explicit_none = False)
+
 ## 2.1.8
 - added support for tabs in explicit table generation
 

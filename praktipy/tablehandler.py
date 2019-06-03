@@ -78,18 +78,18 @@ def _gen_from_txt_visual(filename):
                         if line[i] in SEP_CHARS:
                             found_first_arg = True
                             in_arg = True
-                            if line[i] in QUOTE_CHARS:
+                            if line[i] in COMMENT_CHARS:
                                 in_quotes = True
                     elif in_quotes:
                         if line[i] in QUOTE_CHARS:
                             in_quotes = False
                             in_arg = False
-                    elif not in_arg and line[i] not in QUOTE_CHARS:
+                    elif not in_arg and line[i] not in SEP_CHARS:
                         column_lengths.append(i)
                         in_arg = True
                         if line[i] in QUOTE_CHARS:
                             in_quotes = True
-                    elif in_arg and line[i] in QUOTE_CHARS:
+                    elif in_arg and line[i] in SEP_CHARS:
                         in_arg = False
 
                 for i in column_lengths:
