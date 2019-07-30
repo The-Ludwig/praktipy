@@ -2,6 +2,9 @@
 
 Most recent releases are shown at the top.
 
+## 2.1.11
+- dirty hotfix for the (to be removed) legacy version, which wont include matplotlib because it is imported by the main module
+
 ## 2.1.10
 - bug fix in gen_from_txt(explicit_none = False)
 

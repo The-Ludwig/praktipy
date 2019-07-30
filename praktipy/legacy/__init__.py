@@ -6,11 +6,8 @@ from .tablehandler import TableHandler, genfromtxt
 
 __all__ = []
 
-if "matplotlib" in sys.modules or "matplotlib.pyplot" in sys.modules:
-    print("Praktipy will not set up the matplotlib backend, because it is already set up.")
-else:
-    from .praktiplot import plt, matplotlib, cla
-    __all__ += ["plt", "matplotlib", "cla"]
+from .praktiplot import plt, matplotlib, cla
+__all__ += ["plt", "matplotlib", "cla"]
 
 from scipy.optimize import curve_fit
 from scipy import constants as const
