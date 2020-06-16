@@ -166,7 +166,7 @@ likely that that won't work with the new versions.
 
 I redid the whole code style of praktipy to be a bit more pythonic.
 
-But fear not! There is an easy trick to access old version of praktipy fro within the new version. Whenever you have written something with praktipy, like
+But fear not! There is an easy trick to access the old version of praktipy from within the new version. Whenever you have written something with praktipy, like
 ~~~python
 from praktipy import *
 ~~~ 
@@ -178,4 +178,4 @@ and your code will work without problems.
 
 # Thanks
 
-Thanks a lot to [PEP et al.](https://pep-dortmund.org/) for their [Toolbox-Workshop](https://toolbox.pep-dortmund.org/notes.html) and materials they provide. I basicly stole their matplotlib-tex-header!
+Thanks a lot to [PEP et al.](https://pep-dortmund.org/) for their [Toolbox-Workshop](https://toolbox.pep-dortmund.org/notes.html) and materials they provide. I basically stole their matplotlib-tex-header!
